@@ -1,0 +1,57 @@
+import { Document, Model, model, Schema, Query } from "mongoose"
+
+// Define schema
+const @replaceSchema = new Schema<@replaceDocument, @replaceModel>({
+  property: {
+    type: String,
+    required: true
+  },
+})
+
+// Defining interfaces
+export interface @replace {
+  property: string;
+}
+
+export interface @replaceDocument extends @replace, Document {
+  //  propertyUppercase: string;
+  //  doesHappened():string;
+}
+
+// Virtuals
+// @replaceSchema.virtual("propertyUppercase").get(function(this: @replaceDocument) {
+//   return this.property.toUpperCase();
+// })
+
+// Methods
+// @replaceSchema.methods.doesHappened = function(this: @replaceDocument) {
+//   return this.property === 'something' ? 'Happened':'Not Happened'
+// }
+
+// Model interface
+export interface @replaceModel extends Model<@replaceDocument> {
+//   customFunction(id: string): Promise<@replacePopulatedDocument> // TODO: Create @replacePopulatedDocument interface
+}
+
+// Static methods
+// @replaceSchema.statics.customFunction = async function(
+//   this: Model<@replaceDocument>,
+//   id: string
+// ) {
+//   return this.findById(id).populate("collectionName").exec()
+// }
+
+// Document middlewares
+// @replaceSchema.pre<@replaceDocument>("save", function(next) {
+//   if (this.isModified("property")) {
+//     this.property = this.property[0].toUpperCase() + this.property.substring(1);
+//   }
+// });
+
+// Query middlewares
+// @replaceSchema.post<Query<@replaceDocument, @replaceDocument>>("findOneAndUpdate", async function(doc) {
+//   await updateCollectionReference(doc);
+// });
+
+// Default export
+export default model<@replaceDocument, @replaceModel>("@replace", @replaceSchema)

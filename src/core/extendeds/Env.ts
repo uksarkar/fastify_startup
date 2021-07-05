@@ -19,7 +19,7 @@ export default class Env {
     static get(key: string, value: string | null = null): string | null {
         let cached = this.loadCached(), k = key as keyof object, result = cached[k];
 
-        if (!result) {
+        if (!result || cached["APP_LEVEL" as keyof object] === 'debug') {
             let env = new this();
             result = env[k];
             env.catcheEnv();

@@ -1,9 +1,4 @@
-import {
-  RouteOptions,
-  FastifyReply,
-  FastifyRequest,
-  RawServerBase,
-} from "fastify";
+import RouteDefination from "core/extendeds/RouteDefination";
 import Middleware from "../../middlewares/index";
-const routes: RouteOptions[] = [];
+const routes: RouteDefination[] = [];
 export default routes;

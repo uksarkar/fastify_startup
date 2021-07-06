@@ -16,6 +16,7 @@
     "prettier:check": "npm run prettier:base --list-different"
   },
   "dependencies": {
+    "@types/pino": "^6.3.8",
     "bcrypt": "^5.0.1",
     "dotenv": "^10.0.0",
     "fastify": "^3.18.1",
@@ -23,6 +24,8 @@
     "fastify-static": "^4.2.2",
     "mongoose": "^5.13.0",
     "node-cache": "^5.1.2",
+    "pino": "^6.11.3",
+    "pino-pretty": "^5.1.0",
     "rimraf": "^3.0.2",
     "winston": "^3.3.3"
   },

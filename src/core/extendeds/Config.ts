@@ -1,4 +1,4 @@
-import PathService from "../service/PathService";
+import configs from "../../configs";
 
 export default class Config<T> {
     protected accessor: string[];
@@ -7,8 +7,7 @@ export default class Config<T> {
 
     constructor(accesor: string, defaultVal?: T) {
         const payload: string[] = accesor.split(".");
-        const configs = require(PathService.configPath(String(payload.shift()))).default;
-        this.configs = Object.assign({}, configs);
+        this.configs = Object.assign({}, configs[payload.shift() as keyof object]);
         this.accessor = payload;
         this.defaultVal = defaultVal || null;
     }
@@ -25,8 +24,8 @@ export default class Config<T> {
         return conf.find() || defaultVal;
     }
 
-    static unsafeGet(accessor: string){
-        const conf = new this(accessor);
+    static unsafeGet(accessor: string, defaultVal?: any){
+        const conf = new this(accessor, defaultVal);
         return conf.find();
     }
 }

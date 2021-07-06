@@ -2,11 +2,24 @@ const prettier = require("prettier");
 const fs = require("fs/promises");
 const path = require("path");
 const comments = require("js-comments");
+const prefixes = [
+  "",
+  "Two",
+  "Three",
+  "Four",
+  "Five",
+  "Six",
+  "Seven",
+  "Eight",
+  "Nine",
+  "Ten",
+];
 
 const helps = {
   "make:controller": {
     description: "Make application controller",
-    example: "Example: [yarn/npm] make:controller -rams --name UserController --prefix api/v2/ --middleware auth",
+    example:
+      "Example: [yarn/npm] make:controller -rams --name UserController --prefix api/v2/ --middleware auth",
     info: [
       {
         name: "--name [name]",
@@ -197,7 +210,7 @@ const cacheRoutes = async () => {
 };
 
 const makeController = async (args) => {
-  const { name, prefix, middleware, brief, b, r, a, m, s } = args;
+  const { name, prefix, middleware, brief, b, r, a = true, m, s } = args;
   if (brief || b) {
     return printHelpData("make:controller");
   }
@@ -214,72 +227,13 @@ const makeController = async (args) => {
 
   // controller name
   let controllerName = dirAndName.pop();
-
-  // let's begain to make the controller
-  const methods = {
-    index: {
-      api: true,
-      method: a ? "POST" : "",
-      description: "To index the model data.",
-    },
-    show: {
-      api: true,
-      method: a ? "POST" : "",
-      param: ":id",
-      description: "Show model data.",
-    },
-    create: {
-      api: false,
-      description: "Create file show.",
-    },
-    store: {
-      api: true,
-      method: ["PUT", "PATCH"],
-      description: "Store data to database.",
-    },
-    edit: {
-      api: false,
-      param: ":id",
-      description: "Edit page show.",
-    },
-    update: {
-      api: true,
-      param: ":id",
-      method: ["PUT", "PATCH"],
-      description: "Update model data.",
-    },
-    destroy: {
-      api: true,
-      method: a ? "DELETE" : "",
-      param: ":id",
-      description: "Delete data from the database.",
-    },
-  };
-  const modelName = controllerName.replace(/Controller/gi, "");
-  const functions = Object.keys(methods)
-    .filter((key) => (a ? methods[key].api : true))
-    .map((key) =>
-      functionMaker(
-        key,
-        `${prefix ? prefix : a ? "/api" : ""}/${String(
-          modelName
-        ).toLowerCase()}/${key}/${methods[key].param ?? ""}`,
-        middleware,
-        methods[key].method,
-        methods[key].description
-      )
-    )
-    .join("\n");
-  const template = `export default class ${controllerName}{${
-    r ? functions : "\n\n"
-  }}`;
   // create dir first
   await rMakeDir(path.resolve(__dirname, "./src/controllers/"), [
     ...dirAndName,
   ]);
   let filePath = path.resolve(
     __dirname,
-    `./src/controllers/${dirAndName.join("/")}/${controllerName}.ts`
+    `./src/controllers/${[...dirAndName, controllerName].join("/")}.ts`
   );
 
   try {
@@ -289,21 +243,91 @@ const makeController = async (args) => {
       `${controllerName} already exist.`
     );
   } catch (error) {
+    // let's begain to make the controller
+    const methods = {
+      index: {
+        api: true,
+        method: a ? "POST" : "",
+        description: "To index the model data.",
+      },
+      show: {
+        api: true,
+        method: a ? "POST" : "",
+        param: ":id",
+        description: "Show model data.",
+      },
+      create: {
+        api: false,
+        description: "Create file show.",
+      },
+      store: {
+        api: true,
+        method: ["PUT", "PATCH"],
+        description: "Store data to database.",
+      },
+      edit: {
+        api: false,
+        param: ":id",
+        description: "Edit page show.",
+      },
+      update: {
+        api: true,
+        param: ":id",
+        method: ["PUT", "PATCH"],
+        description: "Update model data.",
+      },
+      destroy: {
+        api: true,
+        method: a ? "DELETE" : "",
+        param: ":id",
+        description: "Delete data from the database.",
+      },
+    };
+    const modelName = controllerName.replace(/Controller/gi, "");
+    let schemaName = s
+      ? await makeSchema({
+          name: `${modelName}RequestSchema`,
+          methods: Object.keys(methods).filter((k) =>
+            a ? methods[k].api : true
+          ),
+        })
+      : undefined;
+    const functions = Object.keys(methods)
+      .filter((key) => (a ? methods[key].api : true))
+      .map((key) =>
+        functionMaker(
+          key,
+          `${prefix ? prefix : a ? "/api" : ""}/${String(
+            modelName
+          ).toLowerCase()}/${key}/${methods[key].param ?? ""}`,
+          middleware,
+          methods[key].method,
+          methods[key].description,
+          schemaName ? `${schemaName}.${key}` : undefined
+        )
+      )
+      .join("\n");
+    const dirDeep = new Array(dirAndName.length + 1).fill("..").join("/");
+    const template = `import Controller from '${dirDeep}/core/Controller';\nimport { FastifyRequest } from "fastify";\nimport Response from "${dirDeep}/core/extendeds/Response";\nimport {Api400Exception} from "${dirDeep}/core/extendeds/Exception";\n\nexport default class ${controllerName} extends Controller{
+      constructor(request: FastifyRequest){
+        super(request);
+      }
+      ${r ? functions : "\n\n"}}`;
     // write the file
     await writeFile(filePath, template);
     // make model if needed
-    if(m) {
-      await makeModel({name: modelName});
+    if (m) {
+      await makeModel({ name: modelName });
     }
     return console.info(
       "\t\x1b[32m%s\x1b[0m\n",
-      `controllers/${dirAndName.join("/")}${dirAndName.length ? '/':''}${controllerName}.ts`
+      `controllers/${[...dirAndName, controllerName].join("/")}.ts`
     );
   }
 };
 
 const makeModel = async (args) => {
-  const { name, prefix, middleware, force, brief, b, r, a, c } = args;
+  const { name, prefix, middleware, force, brief, b, r, a, c, s } = args;
   if (brief || b) {
     return printHelpData("make:model");
   }
@@ -333,7 +357,7 @@ const makeModel = async (args) => {
 
   try {
     // if force then proceed the oparetion
-    if(force) throw("Make model");
+    if (force) throw "Make model";
 
     // check file exist or not
     await fs.stat(filePath);
@@ -345,21 +369,102 @@ const makeModel = async (args) => {
     );
   } catch (error) {
     // let's make the template
-    const templatefile = (await fs.readFile("./src/core/internal/schema_template.txt",{encoding: 'utf-8'})).replace(/@replace/gm, modelName);
-    
+    const templatefile = (
+      await fs.readFile("./src/core/internal/schema_template.txt", {
+        encoding: "utf-8",
+      })
+    ).replace(/@replace/gm, modelName);
+
     // write the file
     await writeFile(filePath, templatefile);
 
     // if the controller argument pass then create the controller
-    if(c){
-      await makeController({prefix, middleware, r, a, name: controllerName})
+    if (c) {
+      await makeController({
+        prefix,
+        middleware,
+        r,
+        a,
+        s,
+        name: controllerName,
+      });
+    } else if (s) {
+      await makeSchema({
+        name: `${modelName}RequestSchema`,
+      });
     }
 
     // inform to console
     return console.info(
       "\t\x1b[32m%s\x1b[0m\n",
-      `models/${dirAndName.join("/")}${dirAndName.length ? '/':''}${modelName}.ts`
+      `models/${[...dirAndName, modelName].join("/")}.ts`
     );
+  }
+};
+
+const makeSchema = async (args) => {
+  const { name, methods } = args;
+  if (!name) {
+    return console.error(
+      "\x1b[31m%s\x1b[0m",
+      "yarn make:schema --name [name] is required. type -b --brief for help"
+    );
+  }
+  const schemaIndex = path.resolve(__dirname, "./src/schema/index.ts");
+  const fileString = await fs.readFile(schemaIndex, { encoding: "utf-8" });
+  const exportLine = fileString.match(/^export\s+default(.*?)}/gms); // get default exports
+  const pattern = /(?:{??[^{]*?})/gm;
+  const matches = exportLine.shift().match(pattern);
+  if (matches.length && matches[0]) {
+    const matchData = matches[0];
+    const exportItems = String(matchData)
+      .replace(/\{|\}|\\n|\s|\\r|\\t/gm, "")
+      .split(",")
+      .filter((v) => v != "");
+    const schemaPropertytemplate = `\n@name:{type: "object", properties:{}}\n`;
+    const singleSchematemplate = `const @name : Schema = {\n ${[
+      "body",
+      "headers",
+      "querystring",
+      "params",
+      "response",
+    ]
+      .map((item) => schemaPropertytemplate.replace("@name", `//${item}`))
+      .join("\n")} \n}`;
+    const schemaMethods = Array.isArray(methods)
+      ? methods
+      : typeof methods === "string"
+      ? methods.trim().split(",")
+      : [];
+    const template = `import Schema from "../core/extendeds/Schema";\n\n${schemaMethods
+      .map((method) => singleSchematemplate.replace("@name", method))
+      .join("\n")}\nexport default {${schemaMethods}};`;
+
+    const schemaFileName = await uniqueFileName(
+      `${__dirname}/src/schema`,
+      name,
+      "ts"
+    );
+
+    await writeFile(
+      path.resolve(__dirname, "src/schema", `${schemaFileName}.ts`),
+      template
+    );
+
+    exportItems.push(schemaFileName);
+    const indexing = fileString.replace(
+      /^export\s+default(.*?)}/gms,
+      `import ${schemaFileName} from './${schemaFileName}';\nexport default {${exportItems}}`
+    );
+    await writeFile(path.resolve(__dirname, "src/schema/index.ts"), indexing);
+
+    // inform to console
+    console.info(
+      "\t\x1b[32m%s\x1b[0m\n",
+      `schema/${schemaFileName}.ts`
+    );
+
+    return schemaFileName;
   }
 };
 
@@ -373,17 +478,22 @@ const printHelpData = (key) => {
   return true;
 };
 
-const functionMaker = (name, route, middleware, method, desc) => {
+const functionMaker = (name, route, middleware, method, desc, schema) => {
   return `\n/**
   * ${desc ?? ""}
   * @route ${route}${middleware ? "\n* @middleware " + middleware : ""}${
     method ? `\n* @method ${method}` : ""
-  }
+  }${schema ? `\n* @schema ${schema}` : ""}
   */
- public async ${name}(req: any, res: any): Promise<any>{
-    // code
-    // must return something
-    return true;
+ public async ${name}(): Promise<Response<object>>{
+   try{
+    // ...code
+    // must return response
+    return Response.json({hello: 'world'});
+   } catch(error) {
+    this.request.log.error(error);
+    throw new Api400Exception("So bad");
+   }
  }\n`;
 };
 
@@ -411,6 +521,19 @@ const rMakeDir = async (base, params) => {
   return true;
 };
 
+const uniqueFileName = async (dir, file, ext, prefix) => {
+  const p = prefix ? [...prefix] : [...prefixes];
+  const fname = `${file}${
+    p.length > 0 ? p.shift() : Math.floor(Math.random() * 100)
+  }`;
+  try {
+    let a = await fs.stat(path.resolve(dir, `${fname}.${ext}`));
+    return uniqueFileName(dir, file, ext, p);
+  } catch (error) {
+    return fname;
+  }
+};
+
 // export all functions
 module.exports = {
   readFolder,
@@ -419,4 +542,5 @@ module.exports = {
   printRoutes,
   makeController,
   makeModel,
+  makeSchema,
 };

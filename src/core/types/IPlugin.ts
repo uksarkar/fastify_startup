@@ -1,4 +1,4 @@
 export default interface IPlugin{
-    name: any;
+    plugin: any;
     options?: any;
 }

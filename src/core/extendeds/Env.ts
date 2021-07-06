@@ -2,6 +2,7 @@ import dotenv from 'dotenv'
 import path from 'path';
 import fs from 'fs';
 const prettier = require('prettier');
+const json = require('../cache/env.json');
 
 export default class Env {
     constructor() {
@@ -16,8 +17,26 @@ export default class Env {
      * @param value Default value to return if key doesn't exist
      * @returns Value of the key
      */
-    static get(key: string, value: string | null = null): string | null {
-        let cached = this.loadCached(), k = key as keyof object, result = cached[k];
+    static get<T>(key: string, value: T): T {
+        let cached = this.loadCached(), k = key as keyof object, result:T | null | undefined = cached[k];
+
+        if (!result || cached["APP_LEVEL" as keyof object] === 'debug') {
+            let env = new this();
+            result = env[k];
+            env.catcheEnv();
+        }
+
+        return result ? result : value;
+    }
+    
+    /**
+     * Get value of an environment variable
+     * @param key The key of the env
+     * @param value Default value to return if key doesn't exist
+     * @returns Value of the key
+     */
+    static unsafeGet(key: string, value: string | any | null = null): string | any | null {
+        let cached = this.loadCached(), k = key as keyof object, result:string | any | null | undefined = cached[k];
 
         if (!result || cached["APP_LEVEL" as keyof object] === 'debug') {
             let env = new this();
@@ -28,9 +47,8 @@ export default class Env {
         return result ? result : value;
     }
 
-    protected static loadCached(): object {
+    private static loadCached(): object {
         try {
-            let json = require('../cache/env.json');
             return JSON.parse(json);
         } catch (error) {
             return {};

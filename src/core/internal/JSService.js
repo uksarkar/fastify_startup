@@ -1,6 +1,6 @@
 /**
- * @param class A class instence
- * @param function Function name of the class to be call
+ * @param obj A class instence
+ * @param fun Function name of the class to be call
  * @param ...args Rest of the arguments, that will pass to the function
  * @returns Object:{valid: bolean, data: any | null, hint?:string}
  * 
@@ -18,10 +18,8 @@
  * // {valid: false, data: null, hint: "NOT_A_FUNCTION"}
  * ```
  */
-export async function dynamicFunctionCaller() {
+export async function dynamicFunctionCaller(obj, fun, ...args) {
   try {
-    const [obj, fun, ...args] = arguments;
-
     if (obj[fun] && obj[fun] instanceof Function) {
       return { valid: true, data: await obj[fun](...args) };
     }

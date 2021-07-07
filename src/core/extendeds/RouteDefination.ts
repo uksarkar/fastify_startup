@@ -1,10 +1,11 @@
 import Controller from "../Controller";
-import { FastifySchema, HTTPMethods, onRequestHookHandler } from "fastify";
+import { HTTPMethods, onRequestHookHandler } from "fastify";
+import Schema from "./Schema";
 
 export default interface RouteDefination {
     method: HTTPMethods | HTTPMethods[];
     url: string;
-    schema?: FastifySchema;
+    schema?: Schema;
     controller: typeof Controller;
     handler: string;
     middleware: onRequestHookHandler[];

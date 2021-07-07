@@ -34,9 +34,13 @@ export default class Server {
 
     // init server
     public initServer(): Server {
+        this.fastify.log.info("Initializing Providers.");
         this.initProviders();
+        this.fastify.log.info("Initializing Plugins.");
         this.initPlugins();
+        this.fastify.log.info("Initializing Routes.");
         this.initRoutes();
+        this.fastify.log.info("Initializing Hooks.");
         this.initHooks();
         return this;
     }
@@ -59,6 +63,7 @@ export default class Server {
     // init the database
     protected async initDatabase(): Promise<boolean> {
         try {
+            this.fastify.log.info("Connecting to mongoDB...");
             await connect(
                 `mongodb://${this.application.dbHost}:${this.application.dbPort}/${this.application.dbName}`,
                 this.application.dbOptions
@@ -86,7 +91,6 @@ export default class Server {
         });
     }
 
-    // TODO: schema not defined yet
     // register all routes to fastify
     protected initRoutes(): void {
         this.application.routes.forEach((route: RouteDefination | RouteOptions) => {
@@ -104,12 +108,12 @@ export default class Server {
                                 const applyPolicy = await dynamicFunctionCaller(policy, route.handler);
                                 // plicy checkup
                                 if (applyPolicy.valid && applyPolicy.data !== true) {
-                                    const msg:string = typeof applyPolicy.data === 'string' && applyPolicy.data != '' ? applyPolicy.data:'Unauthorized!';
-                                    throw new Api401Exception("Failed",msg);
-                                } else if(!applyPolicy.valid) {
-                                    this.fastify.log.warn(`Policy ${controller.policy}.${route.handler} not found!`)
-                                } else if(applyPolicy.valid && applyPolicy.data === true){
-                                    this.fastify.log.info(`Policy ${controller.policy}.${route.handler} applied successfully.`)
+                                    const msg: string = typeof applyPolicy.data === 'string' && applyPolicy.data != '' ? applyPolicy.data : this.application.debug ? 'Cant pass the policy.' : 'Unauthorized!';
+                                    throw new Api401Exception("Failed", msg);
+                                } else if (!applyPolicy.valid) {
+                                    this.fastify.log.warn(`Policy ${route.handler} not found!`)
+                                } else if (applyPolicy.valid && applyPolicy.data === true) {
+                                    this.fastify.log.info(`Policy ${route.handler} applied successfully.`)
                                 }
                             }
 
@@ -118,9 +122,9 @@ export default class Server {
 
                             // check if the function was called successfully
                             if (callHandaler.valid) {
-                                const response: Response<any> = callHandaler.data;
-                                rep.code(response.statusCode);
-                                return response;
+                                const res: Response<any> = callHandaler.data;
+                                rep.code(res.statusCode);
+                                return res;
                             }
                             // if not the go throw error
                             throw new Api500Exception("Method:", `Handler function ${route.controller}.${route.handler}() not found in ${route.controller}.`);
@@ -130,6 +134,29 @@ export default class Server {
                     },
                     onRequest: route.middleware,
                 };
+
+                // define the schema
+                if (route.schema) {
+                    const { response, ...others } = route.schema;
+                    const res = Object({});
+                    let schema = Object({ ...others })
+                    if (response) {
+                        Object.keys(response).map(key => {
+                            res[key as keyof object] = {
+                                type: "object",
+                                properties: {
+                                    statusCode: { type: 'number' },
+                                    message: { type: 'string' },
+                                    data: response[key as keyof object]
+                                }
+                            }
+                        });
+                        schema.response = res;
+                    }
+
+                    routeConfigs.schema = schema;
+                }
+
                 // register the route to fastity
                 this.fastify.route(routeConfigs);
             } else {

@@ -12,7 +12,7 @@ export default class RouteServiceProvider implements Provider {
         this.application = app;
     }
     // get all route definations
-    applicationRoutes: Array<RouteDefination | RouteOptions> = [...cachRoutes, ...routes];
+    protected applicationRoutes: Array<RouteDefination | RouteOptions> = [...cachRoutes, ...routes];
 
     // implement application routes
     apply(): void{

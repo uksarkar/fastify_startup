@@ -21,6 +21,7 @@ export default class Application {
     public readonly dbOptions: ConnectOptions;
     public readonly isProduction: boolean;
     public readonly timeZone: string;
+    public readonly debug: boolean;
 
     constructor() {
         this.isProduction = Config.get<boolean>("app.isProduction", true);
@@ -40,6 +41,7 @@ export default class Application {
                 translateTime: "yyyy-dd-mm, h:MM:ss TT",
             },
         }) : false;
+        this.debug = Config.get("app.debugLavel", "production") !== "production";
     }
 
     get defaultLogger() {

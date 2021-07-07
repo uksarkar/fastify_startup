@@ -4,8 +4,8 @@ import schema from "../../schema";
 import UserController from "../../controllers/UserController";
 const routes: RouteDefination[] = [
   {
-    method: ["POST"],
-    url: "/api/user/index/",
+    method: ["GET"],
+    url: "/web/user/index",
     controller: UserController,
     handler: "index",
     middleware: [middleware.auth],
@@ -13,35 +13,31 @@ const routes: RouteDefination[] = [
   },
   {
     method: ["POST"],
-    url: "/api/user/show/:id",
+    url: "/web/user/show/:id",
     controller: UserController,
     handler: "show",
     middleware: [middleware.auth],
-    schema: schema.UserRequestSchema.show,
   },
   {
     method: ["PUT", "PATCH"],
-    url: "/api/user/store/",
+    url: "/web/user/store",
     controller: UserController,
     handler: "store",
     middleware: [middleware.auth],
-    schema: schema.UserRequestSchema.store,
   },
   {
     method: ["PUT", "PATCH"],
-    url: "/api/user/update/:id",
+    url: "/web/user/update/:id",
     controller: UserController,
     handler: "update",
     middleware: [middleware.auth],
-    schema: schema.UserRequestSchema.update,
   },
   {
     method: ["DELETE"],
-    url: "/api/user/destroy/:id",
+    url: "/web/user/destroy/:id",
     controller: UserController,
     handler: "destroy",
     middleware: [middleware.auth],
-    schema: schema.UserRequestSchema.destroy,
   },
 ];
 export default routes;

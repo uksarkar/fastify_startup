@@ -1,3 +1,4 @@
+import IResponseCode from "../types/IResponseCode";
 
 type DataType = 'object' | 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'null'
 
@@ -17,10 +18,14 @@ interface Properties{
     [k: string]: SchemaItem
 }
 
+interface IResponse{
+    [k: number]: SchemaItem
+}
+
 export default interface Schema {
     body?: SchemaItem;
     headers?: SchemaItem;
     querystring?: SchemaItem;
     params?: SchemaItem;
-    response?: SchemaItem;
+    response?: IResponse;
 }

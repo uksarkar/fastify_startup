@@ -8,7 +8,7 @@ export default {
     | Application Level
     |--------------------------------------------------------------------------
     |
-    | This will used to determine whythere the application is running 
+    | This will be used to determine whether the application is running
     | on Production or Local
     |
     */
@@ -20,7 +20,7 @@ export default {
     | Debug Level
     |--------------------------------------------------------------------------
     |
-    | Use debug for better log information
+    | Use 'debug' for better log information
     |
     */
 

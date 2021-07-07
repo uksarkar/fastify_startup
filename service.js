@@ -206,11 +206,11 @@ const cacheRoutes = async () => {
       // }
       return `{method: [${route.method.map((v) => `'${v}'`)}],url:'${
         route.route
-      }',controller: ${importName},handler: '${route.handler}',${
+      }',controller: ${importName},handler: '${route.handler}'${
         route.middleware
-          ? "middleware:[middleware." + route.middleware.trim() + "]"
+          ? ",middleware:[middleware." + route.middleware.trim() + "]"
           : ""
-      },${route.schema ? "schema:schema." + route.schema.trim() : ""},}`;
+      }${route.schema ? ",schema:schema." + route.schema.trim() : ""},}`;
     })
     .join();
   //add middleware imports
@@ -230,7 +230,7 @@ const cacheRoutes = async () => {
 };
 
 const makeController = async (args) => {
-  const { name, prefix, middleware, brief, b, r, a = true, m, s } = args;
+  const { name, prefix, middleware, brief, b, r, a = true, m, s, p } = args;
   if (brief || b) {
     return printHelpData("make:controller");
   }
@@ -317,9 +317,17 @@ const makeController = async (args) => {
       .map((key) =>
         functionMaker(
           key,
-          `${prefix ? prefix : a ? "/api" : ""}/${String(
-            modelName
-          ).toLowerCase()}/${key}/${methods[key].param ?? ""}`,
+          `${
+            prefix
+              ? prefix[0] === "/"
+                ? prefix
+                : "/" + prefix
+              : a
+              ? "/api"
+              : ""
+          }/${String(modelName).toLowerCase()}/${key}${
+            methods[key].param ? "/" + methods[key].param : ""
+          }`,
           middleware,
           methods[key].method,
           methods[key].description,
@@ -328,9 +336,22 @@ const makeController = async (args) => {
       )
       .join("\n");
     const dirDeep = new Array(dirAndName.length + 1).fill("..").join("/");
-    const template = `import Controller from '${dirDeep}/core/Controller';\nimport { FastifyRequest } from "fastify";\nimport Response from "${dirDeep}/core/extendeds/Response";\nimport {Api400Exception} from "${dirDeep}/core/extendeds/Exception";\n\nexport default class ${controllerName} extends Controller{
+
+    if (p) {
+      await makePolicy({
+        name: `${modelName}Policy`,
+        methods: Object.keys(methods).filter((key) =>
+          a ? methods[key].api : true
+        ),
+      });
+    }
+    const template = `import Controller from '${dirDeep}/core/Controller';\nimport { FastifyRequest } from "fastify";\nimport Response from "${dirDeep}/core/extendeds/Response";\nimport {Api400Exception} from "${dirDeep}/core/extendeds/Exception";\n${
+      p
+        ? `import ${modelName}Policy from '${dirDeep}/policy/${modelName}Policy'`
+        : ""
+    }\n\nexport default class ${controllerName} extends Controller{
       constructor(request: FastifyRequest){
-        super(request);
+        super(request${p ? `,${modelName}Policy` : ""});
       }
       ${r ? functions : "\n\n"}}`;
     // write the file
@@ -385,7 +406,7 @@ const makeModel = async (args) => {
     // if exist then go throw error
     return console.error(
       "\n\t\x1b[31m%s\x1b[0m\n",
-      `${modelName} already exist.`
+      `${modelName} Model already exist.`
     );
   } catch (error) {
     // let's make the template
@@ -441,16 +462,21 @@ const makeSchema = async (args) => {
       .replace(/\{|\}|\\n|\s|\\r|\\t/gm, "")
       .split(",")
       .filter((v) => v != "");
-    const schemaPropertytemplate = `\n@name:{type: "object", properties:{}}\n`;
+    const schemaPropertytemplate = `  // @name: {
+      //   type: "object",
+      //   properties: {}
+      // }\n`;
     const singleSchematemplate = `const @name : Schema = {\n ${[
-      "body",
-      "headers",
-      "querystring",
-      "params",
-      "response",
-    ]
-      .map((item) => schemaPropertytemplate.replace("@name", `//${item}`))
-      .join("\n")} \n}`;
+      ...["body", "headers", "querystring", "params"].map((item) =>
+        schemaPropertytemplate.replace("@name", item)
+      ),
+      `  // response: {
+        //   200: {
+        //     type: "object",
+        //     properties: {},
+        //   },
+        // }`,
+    ].join("\n")} \n}`;
     const schemaMethods = Array.isArray(methods)
       ? methods
       : typeof methods === "string"
@@ -482,6 +508,56 @@ const makeSchema = async (args) => {
     console.info("\t\x1b[32m%s\x1b[0m\n", `schema/${schemaFileName}.ts`);
 
     return schemaFileName;
+  }
+};
+
+const makePolicy = async (args) => {
+  const { name, methods } = args;
+  // check if name provided or not
+  if (!name)
+    return console.error(
+      "\x1b[31m%s\x1b[0m",
+      "yarn make:policy --name [name] is required. type -b --brief for help"
+    );
+
+  const m =
+    typeof methods === "string"
+      ? methods.split(",")
+      : Array.isArray(methods)
+      ? methods
+      : ["test"];
+  const funDefination = `/**
+  * Method name should be the same as you want to apply
+  * to the corresponding Controller method.
+  * 
+  * returning \`true\` will be considered as valid
+  * otherwise return \`false\` or rejection message.
+  * @returns boolean | string
+  */\n@name(): boolean | string {
+    return this.reject();
+}`;
+
+  const template = `import { FastifyRequest } from "fastify";
+  import Policy from "../core/Policy";
+  
+  export default class AccountPolicy extends Policy {
+      
+      constructor(request: FastifyRequest){
+          super(request);
+      }
+      ${m.map((el) => funDefination.replace("@name", el)).join("\n")}
+  }`;
+  const fname = path.resolve(__dirname, `src/policy/${name}.ts`);
+  try {
+    await fs.stat(fname);
+    // if exist then go throw error
+    return console.error(
+      "\n\t\x1b[31m%s\x1b[0m\n",
+      `${modelName} already exist.`
+    );
+  } catch (error) {
+    await writeFile(fname, template);
+    return console.info("\t\x1b[32m%s\x1b[0m\n", `policy/${name}.ts`);
   }
 };
 
@@ -560,4 +636,5 @@ module.exports = {
   makeController,
   makeModel,
   makeSchema,
+  makePolicy,
 };

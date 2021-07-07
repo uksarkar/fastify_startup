@@ -16,4 +16,18 @@ export default class Response<T> {
         const res = new this<T>({data});
         return res;
     }
+
+    code(code: IResponseCode){
+        this.statusCode = code;
+        return this;
+    }
+
+    msg(msg: string){
+        this.message = msg;
+        return this;
+    }
+
+    toObject():object{
+        return {statusCode: this.statusCode, message: this.message, data: this.data}
+    }
 }

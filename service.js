@@ -121,6 +121,7 @@ const getRoutes = async () => {
           name: fileName,
           handler: fname,
           method,
+          schema: data.schema,
         });
     }
   }
@@ -152,11 +153,14 @@ const cacheRoutes = async () => {
   let routes = await getRoutes();
   // write catch file
   let requires = [
-    `import { RouteOptions, FastifyReply, FastifyRequest, RawServerBase } from "fastify"`,
-    `import Middleware from "../../middlewares/index"`,
+    `import RouteDefination from "../extendeds/RouteDefination"`,
+    `import middleware from "../../middlewares"`,
+    `import schema from "../../schema"`,
   ];
   let excludeName = [],
-    excludeFile = [];
+    excludeFile = [],
+    schemaImports = [],
+    middlewareImports = [];
   let body = routes
     .map((route) => {
       let excludePath = path.resolve(process.cwd() + "/src/");
@@ -188,23 +192,39 @@ const cacheRoutes = async () => {
         excludeFile.push({ file, importName });
         excludeName.push(importName);
       }
-
+      // if(route.schema){
+      //   let schemaName = route.schema.split('.').shift();
+      //   if(!schemaImports.includes(schemaName.trim())){
+      //     schemaImports.push(schemaName.trim());
+      //   }
+      // }
+      // if(route.middleware){
+      //   let mName = route.middleware.split('.').shift();
+      //   if(!middlewareImports.includes(mName)){
+      //     middlewareImports.push(mName);
+      //   }
+      // }
       return `{method: [${route.method.map((v) => `'${v}'`)}],url:'${
         route.route
-      }',handler: (request: FastifyRequest, replay: FastifyReply<RawServerBase>): Promise<any> => {let controller = new ${importName}();return controller.${
-        route.handler
-      }(request, replay);},${
+      }',controller: ${importName},handler: '${route.handler}',${
         route.middleware
-          ? "onRequest:[Middleware." + route.middleware + "]"
+          ? "middleware:[middleware." + route.middleware.trim() + "]"
           : ""
-      }}`;
+      },${route.schema ? "schema:schema." + route.schema.trim() : ""},}`;
     })
     .join();
+  //add middleware imports
+  // if(middlewareImports.length)
+  // requires.push(`import {${middlewareImports}} from "../../middlewares"`);
+  // add schema imports
+  // if(schemaImports.length)
+  // requires.push(`import {${schemaImports}} from "../../schema"`);
+
   await writeFile(
     path.resolve(__dirname, "./src/core/cache/routes.ts"),
     `${requires.join(
       ";"
-    )}; const routes:RouteOptions[] = [${body}];export default routes;`
+    )}; const routes:RouteDefination[] = [${body}];export default routes;`
   );
   return true;
 };
@@ -459,10 +479,7 @@ const makeSchema = async (args) => {
     await writeFile(path.resolve(__dirname, "src/schema/index.ts"), indexing);
 
     // inform to console
-    console.info(
-      "\t\x1b[32m%s\x1b[0m\n",
-      `schema/${schemaFileName}.ts`
-    );
+    console.info("\t\x1b[32m%s\x1b[0m\n", `schema/${schemaFileName}.ts`);
 
     return schemaFileName;
   }

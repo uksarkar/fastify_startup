@@ -3,6 +3,7 @@ import routes from "../routes";
 import cachRoutes from "../core/cache/routes";
 import Provider from "../core/extendeds/Provider";
 import Application from "../core/Application";
+import { RouteOptions } from "fastify";
 
 export default class RouteServiceProvider implements Provider {
     application: Application;
@@ -11,10 +12,10 @@ export default class RouteServiceProvider implements Provider {
         this.application = app;
     }
     // get all route definations
-    applicationRoutes: RouteDefination[] = [...cachRoutes, ...routes];
+    applicationRoutes: Array<RouteDefination | RouteOptions> = [...cachRoutes, ...routes];
 
     // implement application routes
-    apply(): Application{
-        return this.application.registerRoutes(this.applicationRoutes);
+    apply(): void{
+        this.application.registerRoutes(this.applicationRoutes);
     }
 }

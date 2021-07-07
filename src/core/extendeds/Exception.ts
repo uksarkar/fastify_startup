@@ -23,54 +23,49 @@ export default class Exception extends Error {
 export class Api400Exception extends Exception {
     constructor(
         name: string,
-        statusCode: number = HttpResponseCode.BAD_REQUEST,
         description: string = 'Bad Request',
         isOperational: boolean = true
     ) {
-        super(name, statusCode, isOperational, description)
+        super(name, HttpResponseCode.BAD_REQUEST, isOperational, description)
     }
 }
 
 export class Api401Exception extends Exception {
     constructor(
         name: string,
-        statusCode: number = HttpResponseCode.UNAUTHORIZED,
         description: string = 'Unauthorized',
         isOperational: boolean = true
     ) {
-        super(name, statusCode, isOperational, description)
+        super(name, HttpResponseCode.UNAUTHORIZED, isOperational, description)
     }
 }
 
 export class Api404Exception extends Exception {
     constructor(
         name: string,
-        statusCode: number = HttpResponseCode.NOT_FOUND,
         description: string = 'Not found.',
         isOperational: boolean = true
     ) {
-        super(name, statusCode, isOperational, description)
+        super(name, HttpResponseCode.NOT_FOUND, isOperational, description)
     }
 }
 
 export class Api406Exception extends Exception {
     constructor(
         name: string,
-        statusCode: number = HttpResponseCode.UNPROCESSABLE_ENTITY,
         description: string = 'Unprocessable Entity.',
         isOperational: boolean = true
     ) {
-        super(name, statusCode, isOperational, description)
+        super(name, HttpResponseCode.UNPROCESSABLE_ENTITY, isOperational, description)
     }
 }
 
 export class Api500Exception extends Exception {
     constructor(
         name: string,
-        statusCode: number = HttpResponseCode.INTERNAL_SERVER,
         description: string = 'Internal Server.',
         isOperational: boolean = false
     ) {
-        super(name, statusCode, isOperational, description)
+        super(name, HttpResponseCode.INTERNAL_SERVER, isOperational, description)
     }
 }

@@ -5,7 +5,7 @@ export default interface Provider {
     application: Application;
 
     // override this method
-    apply(): Application;
+    apply(): void;
 }
 
 export interface ProviderFactory{

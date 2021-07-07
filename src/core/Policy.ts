@@ -17,3 +17,7 @@ export default abstract class Policy {
         return msg || "Unauthorized";
     }
 }
+
+export interface PolicyFactory{
+    new(request: FastifyRequest): Policy;
+}

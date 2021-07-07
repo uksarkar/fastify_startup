@@ -1,11 +1,11 @@
 import { FastifyRequest } from "fastify";
-import Policy from "./Policy";
+import { PolicyFactory } from "./Policy";
 
 export default class Controller {
     request: FastifyRequest;
-    policy?: Policy;
+    policy?: PolicyFactory;
     
-    constructor(request:FastifyRequest, policy?: Policy) {
+    constructor(request:FastifyRequest, policy?: PolicyFactory) {
         this.request = request;
         this.policy = policy;
     }

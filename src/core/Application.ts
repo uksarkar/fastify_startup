@@ -5,9 +5,10 @@ import IPlugin from "./types/IPlugin";
 import { ConnectOptions } from "mongoose";
 import pino from 'pino';
 import PathService from "./service/PathService";
+import { RouteOptions } from "fastify";
 
 export default class Application {
-    private iroutes: RouteDefination[] = [];
+    private iroutes: Array<RouteDefination | RouteOptions> = [];
     private iplugins: IPlugin[] = [];
     private idefaultLogger: boolean | any;
     private ifileLogger: boolean | any;
@@ -59,7 +60,7 @@ export default class Application {
         return this;
     }
 
-    public registerRoutes(routes: RouteDefination[]): Application {
+    public registerRoutes(routes: Array<RouteDefination | RouteOptions>): Application {
         this.iroutes = this.iroutes.concat(routes);
         return this;
     }

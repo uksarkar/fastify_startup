@@ -8,5 +8,5 @@ export default interface RouteDefination {
     schema?: Schema;
     controller: typeof Controller;
     handler: string;
-    middleware: onRequestHookHandler[];
+    middleware?: onRequestHookHandler[];
 }

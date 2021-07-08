@@ -28,15 +28,16 @@
     "fastify-cors": "^6.0.1",
     "fastify-static": "^4.2.2",
     "mongoose": "^5.13.0",
+    "nanoid": "^3.1.23",
     "node-cache": "^5.1.2",
     "pino": "^6.11.3",
     "pino-pretty": "^5.1.0"
   },
   "devDependencies": {
-    "@types/pino": "^6.3.8",
     "@types/bcrypt": "^5.0.0",
     "@types/mongoose": "^5.11.97",
     "@types/node": "^15.12.5",
+    "@types/pino": "^6.3.8",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",
     "autocannon": "^7.3.0",
@@ -46,9 +47,9 @@
     "js-comments": "^0.5.4",
     "nodemon": "^2.0.8",
     "prettier": "^2.3.2",
+    "rimraf": "^3.0.2",
     "ts-node": "^10.0.0",
     "typescript": "^4.3.4",
-    "yargs": "^17.0.1",
-    "rimraf": "^3.0.2"
+    "yargs": "^17.0.1"
   }
 }

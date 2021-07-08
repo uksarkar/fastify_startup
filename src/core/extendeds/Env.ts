@@ -38,7 +38,7 @@ export default class Env {
     static unsafeGet(key: string, value: string | any | null = null): string | any | null {
         let cached = this.loadCached(), k = key as keyof object, result:string | any | null | undefined = cached[k];
 
-        if (!result || cached["APP_LEVEL" as keyof object] === 'debug') {
+        if (!result && cached["APP_LEVEL" as keyof object] !== 'production' || cached["APP_LEVEL" as keyof object] === 'debug') {
             let env = new this();
             result = env[k];
             env.catcheEnv();

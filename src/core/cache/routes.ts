@@ -4,40 +4,38 @@ import schema from "../../schema";
 import UserController from "../../controllers/UserController";
 const routes: RouteDefination[] = [
   {
-    method: ["GET"],
-    url: "/web/user/index",
+    method: ["GET", "HEAD"],
+    url: "/api/user/index",
     controller: UserController,
     handler: "index",
-    middleware: [middleware.auth],
-    schema: schema.UserRequestSchema.index,
   },
   {
     method: ["POST"],
-    url: "/web/user/show/:id",
+    url: "/api/user/show/:id",
     controller: UserController,
     handler: "show",
-    middleware: [middleware.auth],
+    schema: schema.UserRequestSchema.show,
   },
   {
     method: ["PUT", "PATCH"],
-    url: "/web/user/store",
+    url: "/api/user/store",
     controller: UserController,
     handler: "store",
-    middleware: [middleware.auth],
+    schema: schema.UserRequestSchema.store,
   },
   {
     method: ["PUT", "PATCH"],
-    url: "/web/user/update/:id",
+    url: "/api/user/update/:id",
     controller: UserController,
     handler: "update",
-    middleware: [middleware.auth],
+    schema: schema.UserRequestSchema.update,
   },
   {
     method: ["DELETE"],
-    url: "/web/user/destroy/:id",
+    url: "/api/user/destroy/:id",
     controller: UserController,
     handler: "destroy",
-    middleware: [middleware.auth],
+    schema: schema.UserRequestSchema.destroy,
   },
 ];
 export default routes;

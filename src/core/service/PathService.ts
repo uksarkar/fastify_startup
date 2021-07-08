@@ -23,4 +23,8 @@ export default class PathService {
     public static schemaPath(args?: string): string{
         return path.resolve(__dirname, "../../chema", args || '');
     }
+
+    public static storagePath(args?: string): string{
+        return path.resolve(__dirname, "../../storage", args || '');
+    }
 }

@@ -1,12 +1,402 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Welcome to fastify!</title>
+    <title>Welcome to Fastify Startup!</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/themes/prism.min.css"
+        integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+        }
+
+        .button-group {
+            text-align: center;
+        }
+
+        .button-group button {
+            margin: auto 10px;
+        }
+
+        .create-update {
+            padding: 1rem 10px;
+            background-color: rgba(0, 255, 255, 0.082);
+        }
+
+        .create-update label {
+            display: block;
+            margin-bottom: 10px;
+            width: 150px;
+        }
+
+        .create-update input {
+            border: 1px dashed #0046464f;
+            font-size: 1.2rem;
+            padding: 5px 8px;
+        }
+
+        .d-flex {
+            display: flex;
+            justify-content: start;
+            align-items: flex-start;
+        }
+
+        .w-50 {
+            width: 50%;
+        }
+
+        h1.heading {
+            font-size: 30px;
+            text-transform: uppercase;
+            font-weight: 300;
+            text-align: center;
+            margin-bottom: 15px;
+            margin-top: 0;
+        }
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .tbl-header {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .tbl-content {
+            max-height: 300px;
+            overflow-x: auto;
+            margin-top: 0px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .user-table th {
+            padding: 20px 15px;
+            text-align: left;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .user-table td {
+            padding: 15px;
+            text-align: left;
+            vertical-align: middle;
+            border-bottom: solid 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .table-section {
+            background: #fff9c9;
+        }
+
+        .delete {
+            color: brown;
+        }
+
+        .edit {
+            color: limegreen;
+        }
+
+        .delete,
+        .edit {
+            margin: 0 2px;
+        }
+
+        #app {
+            display: none;
+        }
+
+        .loading-app {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: large;
+            font-weight: bold;
+        }
+
+        .animation {
+            animation: fadeInOut .5s ease-in-out 0ms infinite;
+        }
+
+        @keyframes fadeInOut {
+
+            from,
+            to {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .form-group,
+        .label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .form-group .label input,
+        .form-group .label select,
+        .form-group button {
+            width: 100px;
+            margin: auto 5px;
+            border-radius: 5px;
+            border: 1px dotted gray;
+            padding: 7px 8px;
+        }
+
+        .form-group button {
+            width: auto;
+        }
+
+        .console-title {
+            margin: 0;
+            padding: 1rem;
+            background: antiquewhite;
+            color: limegreen;
+        }
+
+        .show {
+            color: cadetblue;
+        }
+    </style>
 </head>
+
 <body>
-    <h1>Hello world.</h1>
+    <div id="loading-app" class="loading-app">Loading App..<span class="animation">.</span></div>
+    <div id="app">
+        <div class="button-group">
+            <h1>Fastity Startup basic User CURD oparetion.</h1>
+            <h5><a href="http://github.com/uksarkar/fastify_startup">See Documention</a></h5>
+        </div>
+        <div class="d-flex">
+            <div class="actions w-50">
+                <div class="create-update">
+                    <h4>{{ formdata._id ? `Update ${users.find(u => u._id === formdata._id).fullname}`:'Create New User'
+                        }}</h4>
+                    <form @submit.prevent="createOrUpdateUser">
+                        <label for="">First Name: <input v-model="formdata.first_name" type="text"
+                                placeholder="First Name"></label>
+                        <label for="">Last Name: <input v-model="formdata.last_name" type="text"
+                                placeholder="Last Name"></label>
+                        <label for="">Age: <input v-model="formdata.age" type="number" placeholder="Age"></label>
+                        <label for="">Username: <input v-model="formdata.username" type="text"
+                                placeholder="Username"></label>
+                        <label for="">Password: <input v-model="formdata.password" type="text"
+                                placeholder="Password"></label>
+                        <button :disabled="loading === 'CREATING_USER' || loading === 'UPDATING_USER'">{{ loading ===
+                            'CREATING_USER' ?
+                            'Submiting..':loading === 'UPDATING_USER' ? 'Updating..':formdata._id ? 'Update':'Submit'
+                            }}<span class="animation"
+                                v-if="loading === 'UPDATING_USER' || loading === 'CREATING_USER'">.</span></button>
+                        <button class="delete" @click.stop="resetForm" :disabled="loading === 'UPDATING_USER'"
+                            v-if="Object.keys(formdata).length">{{ formdata._id ? 'Cancel':'Reset' }}</button>
+                    </form>
+                </div>
+                <section class="table-section">
+                    <h1 class="heading">Users Table</h1>
+                    <div class="form-group">
+                        <div class="label">
+                            <div class="title">Limit</div>
+                            <input v-model="limit" type="number" placeholder="limit">
+                        </div>
+                        <div class="label">
+                            <div class="title">Page</div>
+                            <select v-model="page" name="page">
+                                <option v-for="v in pages" :value="v">{{v}}</option>
+                            </select>
+                        </div>
+                        <button @click.prevent="refreshUsers" :disabled="loading === 'LOADING_USERS'">{{ loading ===
+                            'LOADING_USERS' ?
+                            'Refreshing Users..':'Refresh Users' }}<span class="animation"
+                                v-if="loading === 'LOADING_USERS'">.</span></button>
+                    </div>
+                    <div class="tbl-header">
+                        <table class="user-table" cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Name</th>
+                                    <th>Age</th>
+                                    <th>Username</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <div class="tbl-content">
+                        <table class="user-table" cellpadding="0" cellspacing="0">
+                            <tbody>
+                                <tr v-for="(user,i) in users">
+                                    <td>{{i+1}}</td>
+                                    <td>{{user.fullname}}</td>
+                                    <td>{{user.age}}</td>
+                                    <td>{{user.username}}</td>
+                                    <td>
+                                        <button class="delete" @click.prevent="deleteUser(user._id)"
+                                            :disabled="deleting === user._id">{{ deleting === user._id ?
+                                            'Delete..':'Delete' }}<span class="animation"
+                                                v-if="deleting === user._id">.</span></button>
+                                        <button @click.prevent="setEdit(user)" class="edit">Edit</button>
+                                        <button class="show" @click.prevent="viewUser(user._id)"
+                                            :disabled="showLoading === user._id">
+                                            {{ showLoading === user._id ?
+                                            'Loading..':'Show' }}<span class="animation"
+                                                v-if="showLoading === user._id">.</span>
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+            <div class="output w-50">
+                <h4 class="console-title">Console:$</h4>
+                <pre>
+                    <code class="language-javascript" v-html="code"></code>
+                <pre>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/vue@2.6.14/dist/vue.js"></script>
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/prism.min.js" integrity="sha512-axJX7DJduStuBB8ePC8ryGzacZPr3rdLaIDZitiEgWWk2gsXxEFlm4UW0iNzj2h3wp5mOylgHAzBzM4nRSvTZA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.24.1/components/prism-javascript.min.js" integrity="sha512-3oavHcAYV/4pmn+iDuax6ru7dpjKnd+21+SzCQrYdTiYDncloL7QJ3qYvsA9JU0p7ZQjB+DizGeWMm2sUrCzSQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        new Vue({
+            el: "#app",
+            data: {
+                formdata: {},
+                users: [],
+                code: '',
+                loading: '',
+                deleting: '',
+                showLoading: '',
+                limit: 10,
+                page: 1,
+                total: null,
+                pages: [1]
+            },
+            watch: {
+                limit(v) {
+                    if (v) {
+                        this.calculatePages(true);
+                    }
+                },
+                page(v) {
+                    this.calculatePages(true);
+                }
+            },
+            mounted() {
+                document.getElementById('loading-app').remove();
+                document.getElementById('app').style.display = 'block';
+                this.loadUsers();
+            },
+            methods: {
+                refreshUsers() {
+                    if (this.limit === 10 && this.page === 1) {
+                        return this.loadUsers();
+                    }
+                    this.limit = 10;
+                    this.page = 1;
+                },
+                async loadUsers() {
+                    try {
+                        this.loading = "LOADING_USERS";
+                        let req = await axios.post(`/api/user/index?limit=${this.limit}&page=${this.page}`);
+                        this.users = req.data.data.users;
+                        this.total = req.data.data.total;
+                        this.code = this.heighLight(this.objToString(req.data));
+                        this.calculatePages();
+                    } catch (error) {
+                        this.code = this.heighLight(this.objToString(error.response ? error.response.data : error));
+                    }
+                    this.loading = "";
+                },
+                createOrUpdateUser() {
+                    return this.formdata._id ? this.updateUser() : this.createUser();
+                },
+                async createUser() {
+                    this.loading = "CREATING_USER";
+                    try {
+                        let req = await axios.put('/api/user/store', this.formdata);
+                        this.code = this.heighLight(this.objToString(req.data));
+                        this.users.push(req.data.data);
+                        this.resetForm();
+                    } catch (error) {
+                        console.error(error);
+                        this.code = this.heighLight(this.objToString(error.response ? error.response.data : error));
+                    }
+                    this.loading = "";
+                },
+                async updateUser(user) {
+                    this.loading = "UPDATING_USER";
+                    try {
+                        let { _id, first_name, last_name, username, password, age } = this.formdata;
+                        let req = await axios.patch(`/api/user/update/${_id}`, { first_name, last_name, username, password, age });
+                        this.code = this.heighLight(this.objToString(req.data));
+                        this.users = this.users.map(user => user._id === _id ? req.data.data : user);
+                        this.resetForm();
+                    } catch (error) {
+                        console.error(error);
+                        this.code = this.heighLight(this.objToString(error.response ? error.response.data : error));
+                    }
+                    this.loading = "";
+                },
+                async deleteUser(id) {
+                    this.deleting = id;
+                    try {
+                        let req = await axios.delete(`/api/user/destroy/${id}`);
+                        this.code = this.heighLight(this.objToString(req.data));
+                        this.users = this.users.filter(user => user._id !== id);
+                    } catch (error) {
+                        console.error(error);
+                        this.code = this.heighLight(this.objToString(error.response ? error.response.data : error));
+                    }
+                    this.deleting = "";
+                },
+                async viewUser(id) {
+                    this.showLoading = id;
+                    try {
+                        let req = await axios.post(`/api/user/show/${id}`);
+                        this.code = this.heighLight(this.objToString(req.data));
+                    } catch (error) {
+                        console.error(error);
+                        this.code = this.heighLight(this.objToString(error.response ? error.response.data : error));
+                    }
+                    this.showLoading = "";
+                },
+                objToString(obj) {
+                    return JSON.stringify(obj, null, '\t');
+                },
+                heighLight(code) {
+                    return Prism.highlight(code, Prism.languages.javascript, 'javascript');
+                },
+                resetForm() {
+                    this.formdata = {};
+                },
+                setEdit(user) {
+                    const { password, ...rest } = user;
+                    this.formdata = rest;
+                },
+                calculatePages(reload) {
+                    this.pages = "P".repeat(Math.ceil(this.total / this.limit) || 1).split('').map((v, i) => i + 1);
+                    this.page = this.pages.includes(this.page) ? this.page : this.pages[0];
+                    if (reload) {
+                        return this.loadUsers();
+                    }
+                }
+            }
+        })
+    </script>
 </body>
 </html>

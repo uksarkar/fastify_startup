@@ -101,7 +101,7 @@ export default class Server {
                     url: route.url,
                     handler: async (req: FastifyRequest, rep: FastifyReply) => {
                         try {
-                            const controller = new route.controller(req);
+                            const controller = new route.controller();
                             // check up and apply policy
                             if (controller.policy) {
                                 const policy = new controller.policy(req);
@@ -118,7 +118,7 @@ export default class Server {
                             }
 
                             // call the handler from the controller
-                            const callHandaler = await dynamicFunctionCaller(controller, route.handler);
+                            const callHandaler = await dynamicFunctionCaller(controller, route.handler, req, rep);
 
                             // check if the function was called successfully
                             if (callHandaler.valid) {

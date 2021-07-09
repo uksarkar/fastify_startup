@@ -345,13 +345,13 @@ const makeController = async (args) => {
         ),
       });
     }
-    const template = `import Controller from '${dirDeep}/core/Controller';\nimport { FastifyRequest } from "fastify";\nimport Response from "${dirDeep}/core/extendeds/Response";\nimport {Api400Exception} from "${dirDeep}/core/extendeds/Exception";\n${
+    const template = `import Controller from '${dirDeep}/core/Controller';\nimport { FReplay, FRequest } from "${dirDeep}/core/extendeds/RequestReplay";\nimport Response from "${dirDeep}/core/extendeds/Response";\nimport {Api500Exception} from "${dirDeep}/core/extendeds/Exception";\n${
       p
         ? `import ${modelName}Policy from '${dirDeep}/policy/${modelName}Policy'`
         : ""
     }\n\nexport default class ${controllerName} extends Controller{
-      constructor(request: FastifyRequest){
-        super(request${p ? `,${modelName}Policy` : ""});
+      constructor(){
+        super(${p ? `${modelName}Policy` : ""});
       }
       ${r ? functions : "\n\n"}}`;
     // write the file
@@ -578,14 +578,14 @@ const functionMaker = (name, route, middleware, method, desc, schema) => {
     method ? `\n* @method ${method}` : ""
   }${schema ? `\n* @schema ${schema}` : ""}
   */
- public async ${name}(): Promise<Response<object>>{
+ public async ${name}(request: FRequest<any>, replay: FReplay): Promise<Response<object>>{
    try{
     // ...code
     // must return response
     return Response.json({hello: 'world'});
    } catch(error) {
-    this.request.log.error(error);
-    throw new Api400Exception("So bad");
+    request.log.error(error);
+    throw new Api500Exception("Error:", "Sorry, unable to proccess.");
    }
  }\n`;
 };

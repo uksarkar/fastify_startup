@@ -4,10 +4,11 @@ import schema from "../../schema";
 import UserController from "../../controllers/UserController";
 const routes: RouteDefination[] = [
   {
-    method: ["GET", "HEAD"],
+    method: ["POST"],
     url: "/api/user/index",
     controller: UserController,
     handler: "index",
+    schema: schema.UserRequestSchema.index,
   },
   {
     method: ["POST"],

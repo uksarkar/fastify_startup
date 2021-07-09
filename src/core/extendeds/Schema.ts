@@ -1,15 +1,14 @@
-import IResponseCode from "../types/IResponseCode";
-
 type DataType = 'object' | 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'null'
 
-interface SchemaItem{
+export interface SchemaItem{
     type: DataType | DataType[],
     required?: string[],
     properties?: Properties,
     nullable?:boolean,
     oneOf?: SchemaItem[],
     maxLength?: number,
-    minimum?: number,
+    minLength?: number,
+    length?: number,
     enum?: [],
     not?: SchemaItem,
 }

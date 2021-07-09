@@ -1,12 +1,9 @@
 import { Document, Model, model, Schema, Query } from "mongoose"
 
-// Define schema
-const @replaceSchema = new Schema<@replaceDocument, @replaceModel>({
-  property: {
-    type: String,
-    required: true
-  },
-})
+// Model interface
+export interface @replaceModel extends Model<@replaceDocument> {
+//   customFunction(id: string): Promise<@replacePopulatedDocument> // TODO: Create @replacePopulatedDocument interface
+}
 
 // Defining interfaces
 export interface @replace {
@@ -18,6 +15,14 @@ export interface @replaceDocument extends @replace, Document {
   //  doesHappened():string;
 }
 
+// Define schema
+const @replaceSchema = new Schema<@replaceDocument, @replaceModel>({
+  property: {
+    type: String,
+    required: true
+  },
+})
+
 // Virtuals
 // @replaceSchema.virtual("propertyUppercase").get(function(this: @replaceDocument) {
 //   return this.property.toUpperCase();
@@ -27,11 +32,6 @@ export interface @replaceDocument extends @replace, Document {
 // @replaceSchema.methods.doesHappened = function(this: @replaceDocument) {
 //   return this.property === 'something' ? 'Happened':'Not Happened'
 // }
-
-// Model interface
-export interface @replaceModel extends Model<@replaceDocument> {
-//   customFunction(id: string): Promise<@replacePopulatedDocument> // TODO: Create @replacePopulatedDocument interface
-}
 
 // Static methods
 // @replaceSchema.statics.customFunction = async function(

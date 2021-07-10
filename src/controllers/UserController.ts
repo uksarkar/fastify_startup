@@ -73,6 +73,7 @@ export default class UserController extends Controller {
     try {
       const user = new User(request.body);
       const saved = await user.save();
+
       // must return response
       return Response.json(saved).code(201).msg("User created!");
     } catch (error) {

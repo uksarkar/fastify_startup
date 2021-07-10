@@ -1,7 +1,7 @@
 import { User } from "models/User";
 import Schema, { SchemaItem } from "../core/extendeds/Schema";
 
-const required = ['first_name','last_name','username','age'];
+const required = ['first_name', 'last_name', 'username', 'age', 'email'];
 const commonUserSchema: SchemaItem = {
   type: "object",
   properties: {
@@ -10,7 +10,8 @@ const commonUserSchema: SchemaItem = {
     password: { type: 'string', minLength: 6 },
     username: { type: 'string', minLength: 4 },
     age: { type: 'number' },
-    avatar: { type: ['string', 'null'] }
+    avatar: { type: ['string', 'null'] },
+    email: { type: 'string' }
   },
 };
 
@@ -18,9 +19,9 @@ const index: Schema = {
   querystring: {
     type: ["object", "null"],
     properties: {
-      limit: {type: 'number'},
-      page: {type: 'number'},
-      q: {type: 'string'}
+      limit: { type: 'number' },
+      page: { type: 'number' },
+      q: { type: 'string' }
     }
   }
 };
@@ -28,20 +29,20 @@ const show: Schema = {
   params: {
     type: "object",
     properties: {
-      id: {type: 'string'}
+      id: { type: 'string' }
     },
     required: ['id'],
   }
 };
 const store: Schema = {
-  body: {...commonUserSchema, required: [...required,'password']},
+  body: { ...commonUserSchema, required: [...required, 'password'] },
 };
 const update: Schema = {
-  body: {...commonUserSchema, required},
+  body: { ...commonUserSchema, required },
   params: {
     type: "object",
     properties: {
-      id: {type: 'string'}
+      id: { type: 'string' }
     },
     required: ['id']
   }
@@ -58,7 +59,7 @@ export default { index, show, store, update, destroy };
 
 // recieved request's interface
 export interface UserIndexRequest {
-  Querystring:{
+  Querystring: {
     limit?: number;
     page?: number;
     q?: string;

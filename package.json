@@ -23,6 +23,7 @@
   },
   "dependencies": {
     "bcrypt": "^5.0.1",
+    "bee-queue": "^1.4.0",
     "dotenv": "^10.0.0",
     "fastify": "^3.18.1",
     "fastify-cors": "^6.0.1",
@@ -30,13 +31,14 @@
     "mongoose": "^5.13.0",
     "nanoid": "^3.1.23",
     "node-cache": "^5.1.2",
+    "nodemailer": "^6.6.2",
     "pino": "^6.11.3",
     "pino-pretty": "^5.1.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.0",
-    "@types/mongoose": "^5.11.97",
     "@types/node": "^15.12.5",
+    "@types/nodemailer": "^6.4.4",
     "@types/pino": "^6.3.8",
     "@typescript-eslint/eslint-plugin": "^4.28.1",
     "@typescript-eslint/parser": "^4.28.1",

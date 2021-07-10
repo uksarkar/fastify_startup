@@ -182,15 +182,14 @@
                     <h4>{{ formdata._id ? `Update ${users.find(u => u._id === formdata._id).fullname}`:'Create New User'
                         }}</h4>
                     <form @submit.prevent="createOrUpdateUser">
-                        <label for="">First Name: <input v-model="formdata.first_name" type="text"
+                        <label>First Name: <input v-model="formdata.first_name" type="text"
                                 placeholder="First Name"></label>
-                        <label for="">Last Name: <input v-model="formdata.last_name" type="text"
+                        <label>Last Name: <input v-model="formdata.last_name" type="text"
                                 placeholder="Last Name"></label>
-                        <label for="">Age: <input v-model="formdata.age" type="number" placeholder="Age"></label>
-                        <label for="">Username: <input v-model="formdata.username" type="text"
-                                placeholder="Username"></label>
-                        <label for="">Password: <input v-model="formdata.password" type="text"
-                                placeholder="Password"></label>
+                        <label>Age: <input v-model="formdata.age" type="number" placeholder="Age"></label>
+                        <label>Email: <input v-model="formdata.email" type="email" placeholder="email"></label>
+                        <label>Username: <input v-model="formdata.username" type="text" placeholder="Username"></label>
+                        <label>Password: <input v-model="formdata.password" type="text" placeholder="Password"></label>
                         <button :disabled="loading === 'CREATING_USER' || loading === 'UPDATING_USER'">{{ loading ===
                             'CREATING_USER' ?
                             'Submiting..':loading === 'UPDATING_USER' ? 'Updating..':formdata._id ? 'Update':'Submit'
@@ -236,7 +235,7 @@
                             <tbody>
                                 <tr v-for="(user,i) in users">
                                     <td>{{i+1}}</td>
-                                    <td>{{user.fullname}}</td>
+                                    <td>{{user.fullname}}<br>{{user.email}}</td>
                                     <td>{{user.age}}</td>
                                     <td>{{user.username}}</td>
                                     <td>

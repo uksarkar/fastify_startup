@@ -8,7 +8,7 @@ import { connect } from "mongoose";
 import RouteDefination from "./extendeds/RouteDefination";
 import Application from "./Application";
 import { ProviderFactory } from "./extendeds/Provider";
-import { dynamicFunctionCaller } from "./internal/JSService";
+import { dynamicFunctionCaller } from "./service/JSService";
 import Response from "./extendeds/Response";
 import { Api401Exception, Api500Exception } from "./extendeds/Exception";
 

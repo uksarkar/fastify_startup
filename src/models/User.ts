@@ -1,5 +1,7 @@
 import Hash from "../core/extendeds/Hash";
 import { Document, Model, model, Schema, Query } from "mongoose";
+import Event from "../core/extendeds/Event";
+import OnNewUser from "../events/OnNewUser";
 
 // Model interface
 export interface UserModel extends Model<UserDocument> {
@@ -13,6 +15,7 @@ export interface User {
   password: string;
   avatar?: string;
   username: string;
+  email: string;
   age: number;
 }
 
@@ -39,6 +42,11 @@ const UserSchema = new Schema<UserDocument, UserModel>({
     type: String,
   },
   username: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  email: {
     type: String,
     required: true,
     unique: true,
@@ -71,7 +79,7 @@ UserSchema.methods.isAdult = function (this: UserDocument) {
 // }
 
 // Document middlewares
-UserSchema.pre<UserDocument>("save", async function (next) {
+UserSchema.pre<UserDocument>("save", async function () {
   if (this.isModified("first_name")) {
     this.first_name = this.first_name[0].toUpperCase() + this.first_name.substring(1);
   }
@@ -84,6 +92,11 @@ UserSchema.pre<UserDocument>("save", async function (next) {
 // UserSchema.post<Query<UserDocument, UserDocument>>("findOneAndUpdate", async function(doc) {
 //   await updateCollectionReference(doc);
 // });
+
+UserSchema.post<UserDocument>(["save"], async doc => {
+  // fire the event
+  Event.queue(OnNewUser, doc);
+});
 
 // Default export
 export default model<UserDocument, UserModel>("User", UserSchema);

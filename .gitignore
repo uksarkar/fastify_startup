@@ -5,3 +5,6 @@ yarn.lock
 yarn-error.log
 src/log/fastify.log
 src/.env
+src/dump.rdb
+dump.rdb
+src/core/cache/*

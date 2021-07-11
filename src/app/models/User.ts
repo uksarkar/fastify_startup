@@ -2,6 +2,8 @@ import Hash from "../../core/extendeds/Hash";
 import { Document, Model, model, Schema, Query } from "mongoose";
 import Event from "../../core/extendeds/Event";
 import OnNewUser from "../events/OnNewUser";
+import { INotificationFactory } from "core/types/INotification";
+import Notification from "../../core/extendeds/Notification";
 
 // Model interface
 export interface UserModel extends Model<UserDocument> {
@@ -22,6 +24,7 @@ export interface User {
 export interface UserDocument extends User, Document {
   fullname: string;
   isAdult(): boolean;
+  notify(notifier: INotificationFactory<UserDocument>): void;
 }
 
 // Define schema
@@ -69,6 +72,24 @@ UserSchema.virtual("fullname").get(function (this: UserDocument) {
 UserSchema.methods.isAdult = function (this: UserDocument) {
   return this.age >= 18;
 }
+/**
+ * send notification direct from the model instance
+ * just call like `user.notify(theNotifier)`
+ * 
+ * important - if you don't have redis server then
+ * make sure to use Notification.sync() instead of queue
+ * and use async/await function -- look at the commented one
+ * 
+ * @param this UserDocument
+ * @param notifier INotificationFactory
+ */
+UserSchema.methods.notify = function(this: UserDocument, notifier: INotificationFactory<UserDocument>) {
+  Notification.queue(notifier, this);
+}
+
+// UserSchema.methods.notify = async function(this: UserDocument, notifier: INotificationFactory<UserDocument>) {
+//   await Notification.sync(notifier, this);
+// }
 
 // Static methods
 // UserSchema.statics.customFunction = async function(
@@ -78,7 +99,7 @@ UserSchema.methods.isAdult = function (this: UserDocument) {
 //   return this.findById(id).populate("collectionName").exec()
 // }
 
-// Document middlewares
+// Document middleware
 UserSchema.pre<UserDocument>("save", async function () {
   if (this.isModified("first_name")) {
     this.first_name = this.first_name[0].toUpperCase() + this.first_name.substring(1);
@@ -88,7 +109,7 @@ UserSchema.pre<UserDocument>("save", async function () {
   }
 });
 
-// Query middlewares
+// Query middleware
 // UserSchema.post<Query<UserDocument, UserDocument>>("findOneAndUpdate", async function(doc) {
 //   await updateCollectionReference(doc);
 // });

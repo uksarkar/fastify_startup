@@ -35,11 +35,11 @@ const helps = {
       },
       {
         name: "-r",
-        des: "Pass this argument to make a resoursefull controller.",
+        des: "Pass this argument to make a resourceful controller.",
       },
       {
         name: "-a",
-        des: "Pass this argument with r to make an api resoursefull controller.",
+        des: "Pass this argument with r to make an api resourceful controller.",
       },
       {
         name: "-m",
@@ -153,7 +153,7 @@ const cacheRoutes = async () => {
   let routes = await getRoutes();
   // write catch file
   let requires = [
-    `import RouteDefination from "../extendeds/RouteDefination"`,
+    `import RouteDefinition from "../extendeds/RouteDefinition"`,
     `import middleware from "../../app/request/middlewares"`,
     `import schema from "../../app/request/schema"`,
   ];
@@ -224,7 +224,7 @@ const cacheRoutes = async () => {
     path.resolve(__dirname, "./src/core/cache/routes.ts"),
     `${requires.join(
       ";"
-    )}; const routes:RouteDefination[] = [${body}];export default routes;`
+    )}; const routes:RouteDefinition[] = [${body}];export default routes;`
   );
   return true;
 };
@@ -263,7 +263,7 @@ const makeController = async (args) => {
       `${controllerName} already exist.`
     );
   } catch (error) {
-    // let's begain to make the controller
+    // let's began to make the controller
     const methods = {
       index: {
         api: true,
@@ -397,7 +397,7 @@ const makeModel = async (args) => {
   );
 
   try {
-    // if force then proceed the oparetion
+    // if force then proceed the operation
     if (force) throw "Make model";
 
     // check file exist or not
@@ -587,7 +587,7 @@ const functionMaker = (name, route, middleware, method, desc, schema) => {
     return Response.json({hello: 'world'});
    } catch(error) {
     request.log.error(error);
-    throw new Api500Exception("Error:", "Sorry, unable to proccess.");
+    throw new Api500Exception("Error:", "Sorry, unable to process.");
    }
  }\n`;
 };

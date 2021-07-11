@@ -5,7 +5,7 @@ import fastify, {
     FastifyRequest,
 } from "fastify";
 import { connect } from "mongoose";
-import RouteDefination from "./extendeds/RouteDefination";
+import RouteDefination from "./extendeds/RouteDefinition";
 import Application from "./Application";
 import { HookFactory } from "./extendeds/Hook";
 import { dynamicFunctionCaller } from "./service/JSService";
@@ -26,7 +26,7 @@ export default class Server {
         await this.initApplication().initServer().run();
     }
 
-    // instentiate the server after run
+    // instantiate the server after run
     public static initApplication(): Server {
         const app = new Application();
         return new this(app);
@@ -172,7 +172,7 @@ export default class Server {
         });
     }
 
-    // route defination checkup
+    // route definition checkup
     protected isRouteDefination(route: RouteDefination | RouteOptions): route is RouteDefination {
         return (<RouteDefination>route).controller !== undefined;
     }

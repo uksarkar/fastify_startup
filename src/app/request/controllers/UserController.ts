@@ -11,6 +11,8 @@ import {
   UserShowRequest,
   UserUpdateRequest
 } from "../schema/UserRequestSchema";
+import Notification from "../../../core/extendeds/Notification";
+import NewUserRegisterNotification from "../../notifications/NewUserRegisterNotification";
 
 export default class UserController extends Controller {
   constructor() {
@@ -51,12 +53,12 @@ export default class UserController extends Controller {
   ): Promise<Response<object | null>> {
     try {
       const id = request.params.id;
-      const user = await User.findById(id).lean();
+      const user = await User.findById(id);
       // must return response
       return user ? Response.json(user).msg("User found!") : Response.json({}).code(404).msg("User not found!");
     } catch (error) {
       request.log.error(error);
-      throw new Api500Exception("Error:", "Sorry, unable to proccess.");
+      throw new Api500Exception("Error:", "Sorry, unable to process.");
     }
   }
 
@@ -78,7 +80,7 @@ export default class UserController extends Controller {
       return Response.json(saved).code(201).msg("User created!");
     } catch (error) {
       request.log.error(error);
-      throw new Api500Exception("Error:", "Sorry, unable to proccess.");
+      throw new Api500Exception("Error:", "Sorry, unable to process.");
     }
   }
 
@@ -98,7 +100,7 @@ export default class UserController extends Controller {
       return user ? Response.json(user).code(201).msg("User updated") : Response.json(null).code(404).msg("User Not Found!");
     } catch (error) {
       request.log.error(error);
-      throw new Api500Exception("Error:", "Sorry, unable to proccess.");
+      throw new Api500Exception("Error:", "Sorry, unable to process.");
     }
   }
 
@@ -118,7 +120,7 @@ export default class UserController extends Controller {
       return user ? Response.json(user).msg("User deleted") : Response.json(null).msg("User Not Found").code(404);
     } catch (error) {
       request.log.error(error);
-      throw new Api500Exception("Error:", "Sorry, unable to proccess.");
+      throw new Api500Exception("Error:", "Sorry, unable to process.");
     }
   }
 }

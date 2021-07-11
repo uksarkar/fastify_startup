@@ -23,7 +23,7 @@ export default class Event<T>{
 
                 const fired: boolean | string = await e.onFire();
                 if (fired !== true) {
-                    e.onFaild(new Exception("Event:", true, typeof fired === 'string' ? fired : "Oparetion faild."));
+                    e.onFailed(new Exception("Event:", true, typeof fired === 'string' ? fired : "Operation failed."));
                 }
             } catch (error) {
                 await e.onError(error);
@@ -39,8 +39,8 @@ export default class Event<T>{
             try {
                 const fired: boolean | string = await e.onFire();
                 if (fired !== true) {
-                    err = new Exception("Event:", true, typeof fired === 'string' ? fired : "Oparetion faild.");
-                    e.onFaild(err);
+                    err = new Exception("Event:", true, typeof fired === 'string' ? fired : "Operation failed.");
+                    e.onFailed(err);
                 }
             } catch (error) {
                 await e.onError(error);

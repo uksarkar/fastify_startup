@@ -1,6 +1,6 @@
 import Config from "./extendeds/Config";
 import { HookFactory } from "./extendeds/Hook";
-import RouteDefination from "./extendeds/RouteDefination";
+import RouteDefinition from "./extendeds/RouteDefinition";
 import IPlugin from "./types/IPlugin";
 import { ConnectOptions } from "mongoose";
 import pino from 'pino';
@@ -8,7 +8,7 @@ import PathService from "./service/PathService";
 import { RouteOptions } from "fastify";
 
 export default class Application {
-    private iroutes: Array<RouteDefination | RouteOptions> = [];
+    private iroutes: Array<RouteDefinition | RouteOptions> = [];
     private iplugins: IPlugin[] = [];
     private idefaultLogger: boolean | any;
     private ifileLogger: boolean | any;
@@ -62,7 +62,7 @@ export default class Application {
         return this;
     }
 
-    public registerRoutes(routes: Array<RouteDefination | RouteOptions>): Application {
+    public registerRoutes(routes: Array<RouteDefinition | RouteOptions>): Application {
         this.iroutes = this.iroutes.concat(routes);
         return this;
     }

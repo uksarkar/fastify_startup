@@ -2,7 +2,7 @@ import Controller from "../Controller";
 import { HTTPMethods, onRequestHookHandler } from "fastify";
 import Schema from "./Schema";
 
-export default interface RouteDefination {
+export default interface RouteDefinition {
     method: HTTPMethods | HTTPMethods[];
     url: string;
     schema?: Schema;

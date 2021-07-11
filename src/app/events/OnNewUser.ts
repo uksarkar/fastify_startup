@@ -1,7 +1,7 @@
 import IEvent from "../../core/types/IEvent";
-import { UserDocument } from "app/models/User";
-import Mail from "../../core/extendeds/Mail";
-import Env from "../../core/extendeds/Env";
+import { UserDocument } from "../models/User";
+import Notification from "../../core/extendeds/Notification";
+import NewUserRegisterNotification from "../notifications/NewUserRegisterNotification";
 
 export default class OnNewUser implements IEvent<UserDocument>{
     user: UserDocument;
@@ -10,14 +10,7 @@ export default class OnNewUser implements IEvent<UserDocument>{
     }
 
     async onFire(): Promise<string | boolean>{
-        // send email
-        await Mail.to(this.user.email)
-            .subject("Welcome to " + Env.unsafeGet("APP_NAME"))
-            .html(`<h1>Hello ${this.user.fullname}</h1><br><i>Your are registered to our platform!<i>`)
-            .send();
-
-        // mail sent
-        console.log("mail sent");
+        await Notification.sync(NewUserRegisterNotification, this.user);
         return true;
     }
 
@@ -25,7 +18,7 @@ export default class OnNewUser implements IEvent<UserDocument>{
         console.error(err);
     }
 
-    async onFaild(err: unknown){
+    async onFailed(err: unknown){
         console.error(err);
     }
 }

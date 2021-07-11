@@ -1,6 +1,6 @@
-import Hash from "../core/extendeds/Hash";
+import Hash from "../../core/extendeds/Hash";
 import { Document, Model, model, Schema, Query } from "mongoose";
-import Event from "../core/extendeds/Event";
+import Event from "../../core/extendeds/Event";
 import OnNewUser from "../events/OnNewUser";
 
 // Model interface

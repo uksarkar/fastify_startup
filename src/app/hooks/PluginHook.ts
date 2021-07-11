@@ -1,10 +1,10 @@
-import Provider from "../core/extendeds/Provider";
-import Application from "../core/Application";
-import IPlugin from "../core/types/IPlugin";
+import Hook from "../../core/extendeds/Hook";
+import Application from "../../core/Application";
+import IPlugin from "../../core/types/IPlugin";
 import fastifyStatic from "fastify-static";
-import PathService from "../core/service/PathService";
+import PathService from "../../core/service/PathService";
 
-export default class PluginServiceProvider implements Provider {
+export default class PluginHook implements Hook {
     // application instence
     application: Application;
 
@@ -14,7 +14,10 @@ export default class PluginServiceProvider implements Provider {
     }
 
     // get all route definations
-    applicationPlugins: IPlugin[] = [{ plugin: fastifyStatic, options: { root: PathService.publicPath() } }];
+    applicationPlugins: IPlugin[] = [{
+        plugin: fastifyStatic,
+        options: { root: PathService.publicPath() }
+    }];
 
     // implement application plugins
     apply(): Application {

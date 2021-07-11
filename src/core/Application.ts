@@ -1,5 +1,5 @@
 import Config from "./extendeds/Config";
-import { ProviderFactory } from "./extendeds/Provider";
+import { HookFactory } from "./extendeds/Hook";
 import RouteDefination from "./extendeds/RouteDefination";
 import IPlugin from "./types/IPlugin";
 import { ConnectOptions } from "mongoose";
@@ -12,7 +12,7 @@ export default class Application {
     private iplugins: IPlugin[] = [];
     private idefaultLogger: boolean | any;
     private ifileLogger: boolean | any;
-    public readonly providers: ProviderFactory[];
+    public readonly hooks: HookFactory[];
     public readonly host: string;
     public readonly port: number;
     public readonly dbHost: string;
@@ -26,7 +26,7 @@ export default class Application {
     constructor() {
         this.isProduction = Config.get<boolean>("app.isProduction", true);
         this.timeZone = Config.get<string>("app.timeZone", "America/New_York");
-        this.providers = Config.get<ProviderFactory[]>("app.providers", []);
+        this.hooks = Config.get<HookFactory[]>("app.hooks", []);
         this.host = Config.get<string>("app.host", '');
         this.port = Config.get<number>("app.port", 5000);
         this.dbHost = Config.get<string>("database.dbHost", '');

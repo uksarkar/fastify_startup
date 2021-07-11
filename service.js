@@ -85,7 +85,7 @@ const readFolder = async (dir) => {
 };
 
 const getRoutes = async () => {
-  const controllerDir = path.resolve(__dirname, "./src/controllers/");
+  const controllerDir = path.resolve(__dirname, "./src/app/request/controllers/");
   const controllers = await readFolder(controllerDir);
   let routes = [];
 
@@ -154,8 +154,8 @@ const cacheRoutes = async () => {
   // write catch file
   let requires = [
     `import RouteDefination from "../extendeds/RouteDefination"`,
-    `import middleware from "../../middlewares"`,
-    `import schema from "../../schema"`,
+    `import middleware from "../../app/request/middlewares"`,
+    `import schema from "../../app/request/schema"`,
   ];
   let excludeName = [],
     excludeFile = [],
@@ -163,12 +163,12 @@ const cacheRoutes = async () => {
     middlewareImports = [];
   let body = routes
     .map((route) => {
-      let excludePath = path.resolve(process.cwd() + "/src/");
+      let excludePath = path.resolve(process.cwd() + "/src/app/request/");
 
       let file = route.controller
         .split(".")
         .shift()
-        .replace(excludePath, "../..");
+        .replace(excludePath, "../../app/request");
 
       let foundFile = Object.values(excludeFile).find((v) => v.file === file);
 
@@ -248,12 +248,12 @@ const makeController = async (args) => {
   // controller name
   let controllerName = dirAndName.pop();
   // create dir first
-  await rMakeDir(path.resolve(__dirname, "./src/controllers/"), [
+  await rMakeDir(path.resolve(__dirname, "./src/app/request/controllers/"), [
     ...dirAndName,
   ]);
   let filePath = path.resolve(
     __dirname,
-    `./src/controllers/${[...dirAndName, controllerName].join("/")}.ts`
+    `./src/app/request/controllers/${[...dirAndName, controllerName].join("/")}.ts`
   );
 
   try {
@@ -335,7 +335,7 @@ const makeController = async (args) => {
         )
       )
       .join("\n");
-    const dirDeep = new Array(dirAndName.length + 1).fill("..").join("/");
+    const dirDeep = new Array(dirAndName.length + 2).fill("..").join("/");
 
     if (p) {
       await makePolicy({
@@ -345,9 +345,9 @@ const makeController = async (args) => {
         ),
       });
     }
-    const template = `import Controller from '${dirDeep}/core/Controller';\nimport { FReplay, FRequest } from "${dirDeep}/core/extendeds/RequestReplay";\nimport Response from "${dirDeep}/core/extendeds/Response";\nimport {Api500Exception} from "${dirDeep}/core/extendeds/Exception";\n${
+    const template = `import Controller from '${dirDeep}/../core/Controller';\nimport { FReplay, FRequest } from "${dirDeep}/../core/extendeds/RequestReplay";\nimport Response from "${dirDeep}/../core/extendeds/Response";\nimport {Api500Exception} from "${dirDeep}/../core/extendeds/Exception";\n${
       p
-        ? `import ${modelName}Policy from '${dirDeep}/policy/${modelName}Policy'`
+        ? `import ${modelName}Policy from '${dirDeep}/policies/${modelName}Policy'`
         : ""
     }\n\nexport default class ${controllerName} extends Controller{
       constructor(){
@@ -388,12 +388,12 @@ const makeModel = async (args) => {
 
   const controllerName = modelName + "Controller";
   // create dir first
-  await rMakeDir(path.resolve(__dirname, "./src/controllers/"), [
+  await rMakeDir(path.resolve(__dirname, "./src/app/request/controllers/"), [
     ...dirAndName,
   ]);
   let filePath = path.resolve(
     __dirname,
-    `./src/models/${dirAndName.join("/")}/${modelName}.ts`
+    `./src/app/models/${dirAndName.join("/")}/${modelName}.ts`
   );
 
   try {
@@ -451,7 +451,7 @@ const makeSchema = async (args) => {
       "yarn make:schema --name [name] is required. type -b --brief for help"
     );
   }
-  const schemaIndex = path.resolve(__dirname, "./src/schema/index.ts");
+  const schemaIndex = path.resolve(__dirname, "./src/app/request/schema/index.ts");
   const fileString = await fs.readFile(schemaIndex, { encoding: "utf-8" });
   const exportLine = fileString.match(/^export\s+default(.*?)}/gms); // get default exports
   const pattern = /(?:{??[^{]*?})/gm;
@@ -482,18 +482,18 @@ const makeSchema = async (args) => {
       : typeof methods === "string"
       ? methods.trim().split(",")
       : [];
-    const template = `import Schema from "../core/extendeds/Schema";\n\n${schemaMethods
+    const template = `import Schema from "../../../core/extendeds/Schema";\n\n${schemaMethods
       .map((method) => singleSchematemplate.replace("@name", method))
       .join("\n")}\nexport default {${schemaMethods}};`;
 
     const schemaFileName = await uniqueFileName(
-      `${__dirname}/src/schema`,
+      `${__dirname}/src/app/request/schema`,
       name,
       "ts"
     );
 
     await writeFile(
-      path.resolve(__dirname, "src/schema", `${schemaFileName}.ts`),
+      path.resolve(__dirname, "src/app/request/schema", `${schemaFileName}.ts`),
       template
     );
 
@@ -502,10 +502,10 @@ const makeSchema = async (args) => {
       /^export\s+default(.*?)}/gms,
       `import ${schemaFileName} from './${schemaFileName}';\nexport default {${exportItems}}`
     );
-    await writeFile(path.resolve(__dirname, "src/schema/index.ts"), indexing);
+    await writeFile(path.resolve(__dirname, "src/app/request/schema/index.ts"), indexing);
 
     // inform to console
-    console.info("\t\x1b[32m%s\x1b[0m\n", `schema/${schemaFileName}.ts`);
+    console.info("\t\x1b[32m%s\x1b[0m\n", `app/request/schema/${schemaFileName}.ts`);
 
     return schemaFileName;
   }
@@ -538,7 +538,7 @@ const makePolicy = async (args) => {
 }`;
 
   const template = `import { FastifyRequest } from "fastify";
-  import Policy from "../core/Policy";
+  import Policy from "../../core/Policy";
   
   export default class AccountPolicy extends Policy {
       
@@ -547,7 +547,7 @@ const makePolicy = async (args) => {
       }
       ${m.map((el) => funDefination.replace("@name", el)).join("\n")}
   }`;
-  const fname = path.resolve(__dirname, `src/policy/${name}.ts`);
+  const fname = path.resolve(__dirname, `src/app/policies/${name}.ts`);
   try {
     await fs.stat(fname);
     // if exist then go throw error
@@ -557,7 +557,7 @@ const makePolicy = async (args) => {
     );
   } catch (error) {
     await writeFile(fname, template);
-    return console.info("\t\x1b[32m%s\x1b[0m\n", `policy/${name}.ts`);
+    return console.info("\t\x1b[32m%s\x1b[0m\n", `app/policies/${name}.ts`);
   }
 };
 
@@ -637,4 +637,5 @@ module.exports = {
   makeModel,
   makeSchema,
   makePolicy,
+  rMakeDir,
 };

@@ -1,5 +1,5 @@
 import { FastifyRequest } from "fastify";
-import Policy from "../core/Policy";
+import Policy from "../../core/Policy";
 
 export default class AccountPolicy extends Policy {
   constructor(request: FastifyRequest) {
@@ -14,7 +14,7 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   index(): boolean | string {
-    return this.proceed();
+    return this.reject();
   }
   /**
    * Method name should be the same as you want to apply
@@ -25,7 +25,7 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   show(): boolean | string {
-    return this.proceed();
+    return this.reject();
   }
   /**
    * Method name should be the same as you want to apply
@@ -36,7 +36,7 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   store(): boolean | string {
-    return this.proceed();
+    return this.reject();
   }
   /**
    * Method name should be the same as you want to apply
@@ -47,7 +47,7 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   update(): boolean | string {
-    return this.proceed();
+    return this.reject();
   }
   /**
    * Method name should be the same as you want to apply
@@ -58,6 +58,6 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   destroy(): boolean | string {
-    return this.reject("The policy `src/policy/UserPolicy.ts > destroy()` prevented this request. Set `return this.proceed();` to see the magic.");
+    return this.reject();
   }
 }

@@ -1,7 +1,7 @@
-import IEvent from "../core/types/IEvent";
-import { UserDocument } from "models/User";
-import Mail from "../core/extendeds/Mail";
-import Env from "../core/extendeds/Env";
+import IEvent from "../../core/types/IEvent";
+import { UserDocument } from "app/models/User";
+import Mail from "../../core/extendeds/Mail";
+import Env from "../../core/extendeds/Env";
 
 export default class OnNewUser implements IEvent<UserDocument>{
     user: UserDocument;

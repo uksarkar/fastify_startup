@@ -1,5 +1,5 @@
-import { User } from "models/User";
-import Schema, { SchemaItem } from "../core/extendeds/Schema";
+import { User } from "app/models/User";
+import Schema, { SchemaItem } from "../../../core/extendeds/Schema";
 
 const required = ['first_name', 'last_name', 'username', 'age', 'email'];
 const commonUserSchema: SchemaItem = {

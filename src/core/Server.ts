@@ -7,7 +7,7 @@ import fastify, {
 import { connect } from "mongoose";
 import RouteDefination from "./extendeds/RouteDefination";
 import Application from "./Application";
-import { ProviderFactory } from "./extendeds/Provider";
+import { HookFactory } from "./extendeds/Hook";
 import { dynamicFunctionCaller } from "./service/JSService";
 import Response from "./extendeds/Response";
 import { Api401Exception, Api500Exception } from "./extendeds/Exception";
@@ -34,8 +34,8 @@ export default class Server {
 
     // init server
     public initServer(): Server {
-        this.fastify.log.info("Initializing Providers.");
-        this.initProviders();
+        this.fastify.log.info("Initializing Hooks.");
+        this.initHooks();
         this.fastify.log.info("Initializing Plugins.");
         this.initPlugins();
         this.fastify.log.info("Initializing Routes.");
@@ -76,11 +76,20 @@ export default class Server {
         return false;
     }
 
-    // register providers
-    protected initProviders(): void {
-        this.application.providers.forEach((provider: ProviderFactory) => {
-            const instance = new provider(this.application);
+    // register Hooks
+    protected initHooks(): void {
+        this.application.hooks.forEach((hook: HookFactory) => {
+            const instance = new hook(this.application);
             instance.apply();
+        });
+
+        // register onerror
+        // TODO: error handling setup needed
+        this.fastify.addHook('onError', (request, reply, error, next) => {
+            if (this.application.fileLogger && this.application.fileLogger.error instanceof Function) {
+                this.application.fileLogger.error(error);
+            }
+            next();
         });
     }
 
@@ -162,18 +171,6 @@ export default class Server {
             } else {
                 this.fastify.route(route);
             }
-        });
-    }
-
-    // register hooks
-    protected initHooks(): void {
-        // register onerror
-        // TODO: error handling setup needed
-        this.fastify.addHook('onError', (request, reply, error, next) => {
-            if (this.application.fileLogger && this.application.fileLogger.error instanceof Function) {
-                this.application.fileLogger.error(error);
-            }
-            next();
         });
     }
 

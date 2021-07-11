@@ -8,7 +8,7 @@
   "scripts": {
     "start": "npm run build && node dist/init.js",
     "start:dev": "cross-env NODE_ENV=development && gulp start",
-    "build": "rimraf ./dist && tsc",
+    "build": "rimraf ./dist && tsc && gulp configure:dist",
     "lint": "eslint --fix {server,test,config}/**/*.{js,ts}",
     "prettier": "prettier",
     "prettier:base": "npm run prettier **/*.{js,json,scss,md,ts,html,component.html}",
@@ -45,6 +45,7 @@
     "autocannon": "^7.3.0",
     "cross-env": "^7.0.3",
     "gulp": "^4.0.2",
+    "gulp-copy": "^4.0.1",
     "gulp-nodemon": "^2.5.0",
     "js-comments": "^0.5.4",
     "nodemon": "^2.0.8",

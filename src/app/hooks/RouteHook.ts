@@ -1,11 +1,11 @@
-import RouteDefination from "../core/extendeds/RouteDefination";
-import routes from "../routes";
-import cachRoutes from "../core/cache/routes";
-import Provider from "../core/extendeds/Provider";
-import Application from "../core/Application";
+import RouteDefination from "../../core/extendeds/RouteDefination";
+import routes from "../../routes";
+import cachRoutes from "../../core/cache/routes";
+import Hook from "../../core/extendeds/Hook";
+import Application from "../../core/Application";
 import { RouteOptions } from "fastify";
 
-export default class RouteServiceProvider implements Provider {
+export default class RouteHook implements Hook {
     application: Application;
     
     constructor(app: Application) {

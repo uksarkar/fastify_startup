@@ -1,5 +1,5 @@
 import Env from "../core/extendeds/Env";
-import IDBConfig from "core/types/IDBConfig";
+import IDBConfig from "../core/types/IDBConfig";
 
 const dbconfigs: IDBConfig = {
 

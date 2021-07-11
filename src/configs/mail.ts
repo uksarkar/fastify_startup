@@ -88,5 +88,5 @@ export default {
     |
     */
 
-    mailer: Env.get<string | null>("MAIL_FROM_NAME", 'fastifystartup@example.com'),
+    mailer: Env.get<string | null>("MAIL_FROM_NAME", 'FASTIFY'),
 }

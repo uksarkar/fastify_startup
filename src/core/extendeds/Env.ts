@@ -1,16 +1,15 @@
 import dotenv from 'dotenv'
 import path from 'path';
-import fs from 'fs';
-const prettier = require('prettier');
+import {writeFileSync, readFileSync} from 'fs';
 const json = require('../cache/env.json');
 
 export default class Env {
     constructor() {
         let src = path.resolve(__dirname, "../../.env");
-        let data = dotenv.parse(fs.readFileSync(src));
+        let data = dotenv.parse(readFileSync(src));
         Object.assign(this, data);
     }
-    
+
     /**
      * Get value of an environment variable
      * @param key The key of the env
@@ -18,7 +17,7 @@ export default class Env {
      * @returns Value of the key
      */
     static get<T>(key: string, value: T): T {
-        let cached = this.loadCached(), k = key as keyof object, result:T | null | undefined = cached[k];
+        let cached = this.loadCached(), k = key as keyof object, result: T | null | undefined = cached[k];
 
         if (!result || cached["APP_LEVEL" as keyof object] === 'debug') {
             let env = new this();
@@ -28,7 +27,7 @@ export default class Env {
 
         return result ? result : value;
     }
-    
+
     /**
      * Get value of an environment variable
      * @param key The key of the env
@@ -36,7 +35,7 @@ export default class Env {
      * @returns Value of the key
      */
     static unsafeGet(key: string, value: string | any | null = null): string | any | null {
-        let cached = this.loadCached(), k = key as keyof object, result:string | any | null | undefined = cached[k];
+        let cached = this.loadCached(), k = key as keyof object, result: string | any | null | undefined = cached[k];
 
         if (!result && cached["APP_LEVEL" as keyof object] !== 'production' || cached["APP_LEVEL" as keyof object] === 'debug') {
             let env = new this();
@@ -57,10 +56,8 @@ export default class Env {
 
     private catcheEnv(): boolean {
         let data = Object.assign({}, this);
-        fs.writeFileSync(path.resolve(__dirname, "../cache/env.json"),
-            prettier.format(JSON.stringify(data), {
-                parser: "json",
-            }))
+        writeFileSync(path.resolve(__dirname, "../cache/env.json"),
+            JSON.stringify(data, null, '\t'))
         return true;
     }
 }

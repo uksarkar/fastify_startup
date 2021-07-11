@@ -1,6 +1,6 @@
 import Application from "../Application";
 
-export default interface Provider {
+export default interface Hook {
     // the application instance
     application: Application;
 
@@ -8,6 +8,6 @@ export default interface Provider {
     apply(): void;
 }
 
-export interface ProviderFactory{
-    new(app: Application):Provider;
+export interface HookFactory{
+    new(app: Application):Hook;
 }

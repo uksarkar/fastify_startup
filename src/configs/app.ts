@@ -1,5 +1,5 @@
 import Env from "../core/extendeds/Env";
-import providers from "../providers";
+import hooks from "../app/hooks";
 
 export default {
 
@@ -50,13 +50,13 @@ export default {
 
     /*
     |--------------------------------------------------------------------------
-    | Application providers
+    | Application Hooks
     |--------------------------------------------------------------------------
     |
-    | Providers are basicaly hook to the application to initiate 
+    | Hook to the application to initiate 
     | some information before geting run the server.
     |
     */
 
-    providers,
+    hooks,
 }

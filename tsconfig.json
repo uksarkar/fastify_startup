@@ -1,9 +1,9 @@
 {
   "compilerOptions": {
-    "target": "es5",
+    "target": "es2020",
     "module": "commonjs",
-    "moduleResolution": "node",
-    "lib": ["es6"],
+    "removeComments": true,
+    "lib": ["es2020"],
     "allowJs": true,
     "outDir": "dist",
     "strict": true,
@@ -12,7 +12,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "./src"
+    "baseUrl": "./src",
+    "rootDir": "./src",
+    "pretty": true,
   },
-  "exclude": ["node_modules", "**/*.spec.ts", "src/core/internal"]
+  "exclude": ["node_modules", "**/*.spec.ts", "src/core/internal","*.*","dist"]
 }

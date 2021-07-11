@@ -1,30 +1,34 @@
-import path from "path";
+import { resolve } from "path";
 export default class PathService {
-    public static publicPath(args?: string): string{
-        return path.resolve(__dirname, "../../public", args || '');
+    public static publicPath(path?: string): string {
+        return this.resolvePath("../../public", path);
     }
 
-    public static controllerPath(args?: string): string{
-        return path.resolve(__dirname, "../../controllers", args || '');
+    public static controllerPath(path?: string): string {
+        return this.resolvePath("../../app/request/controllers", path);
     }
 
-    public static configPath(args?: string): string{
-        return path.resolve(__dirname, "../../configs", args || '');
+    public static configPath(path?: string): string {
+        return this.resolvePath("../../configs", path);
     }
 
-    public static logPath(args?: string): string{
-        return path.resolve(__dirname, "../../log", args || '');
+    public static logPath(path?: string): string {
+        return this.resolvePath("../../storage/log", path);
     }
 
-    public static routePath(args?: string): string{
-        return path.resolve(__dirname, "../../routes", args || '');
+    public static routePath(path?: string): string {
+        return this.resolvePath("../../routes", path);
     }
 
-    public static schemaPath(args?: string): string{
-        return path.resolve(__dirname, "../../chema", args || '');
+    public static schemaPath(path?: string): string {
+        return this.resolvePath("../../app/request/schema", path);
     }
 
-    public static storagePath(args?: string): string{
-        return path.resolve(__dirname, "../../storage", args || '');
+    public static storagePath(path?: string): string {
+        return this.resolvePath("../../storage", path);
+    }
+
+    private static resolvePath(location: string, to: string = '') {
+        return resolve(__dirname, location, to);
     }
 }

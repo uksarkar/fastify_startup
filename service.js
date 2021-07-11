@@ -230,7 +230,7 @@ const cacheRoutes = async () => {
 };
 
 const makeController = async (args) => {
-  const { name, prefix, middleware, brief, b, r, a = true, m, s, p } = args;
+  const { name, prefix, middleware, brief, b, r, a = true, m, s, o } = args;
   if (brief || b) {
     return printHelpData("make:controller");
   }
@@ -337,21 +337,21 @@ const makeController = async (args) => {
       .join("\n");
     const dirDeep = new Array(dirAndName.length + 2).fill("..").join("/");
 
-    if (p) {
-      await makePolicy({
-        name: `${modelName}Policy`,
+    if (o) {
+      await makeModerator({
+        name: `${modelName}Moderator`,
         methods: Object.keys(methods).filter((key) =>
           a ? methods[key].api : true
         ),
       });
     }
     const template = `import Controller from '${dirDeep}/../core/Controller';\nimport { FReplay, FRequest } from "${dirDeep}/../core/extendeds/RequestReplay";\nimport Response from "${dirDeep}/../core/extendeds/Response";\nimport {Api500Exception} from "${dirDeep}/../core/extendeds/Exception";\n${
-      p
-        ? `import ${modelName}Policy from '${dirDeep}/policies/${modelName}Policy'`
+      o
+        ? `import ${modelName}Moderator from '${dirDeep}/moderators/${modelName}Moderator'`
         : ""
     }\n\nexport default class ${controllerName} extends Controller{
       constructor(){
-        super(${p ? `${modelName}Policy` : ""});
+        super(${o ? `${modelName}Moderator` : ""});
       }
       ${r ? functions : "\n\n"}}`;
     // write the file
@@ -368,7 +368,7 @@ const makeController = async (args) => {
 };
 
 const makeModel = async (args) => {
-  const { name, prefix, middleware, force, brief, b, r, a, c, s } = args;
+  const { name, prefix, middleware, force, brief, b, r, a, c, s, o } = args;
   if (brief || b) {
     return printHelpData("make:model");
   }
@@ -427,6 +427,7 @@ const makeModel = async (args) => {
         r,
         a,
         s,
+        o,
         name: controllerName,
       });
     } else if (s) {
@@ -511,13 +512,13 @@ const makeSchema = async (args) => {
   }
 };
 
-const makePolicy = async (args) => {
+const makeModerator = async (args) => {
   const { name, methods } = args;
   // check if name provided or not
   if (!name)
     return console.error(
       "\x1b[31m%s\x1b[0m",
-      "yarn make:policy --name [name] is required. type -b --brief for help"
+      "yarn make:moderator --name [name] is required. type -b --brief for help"
     );
 
   const m =
@@ -536,18 +537,19 @@ const makePolicy = async (args) => {
   */\n@name(): boolean | string {
     return this.reject();
 }`;
+  const className = /Moderator/gi.test(name) ? name:name+"Moderator";
 
   const template = `import { FastifyRequest } from "fastify";
-  import Policy from "../../core/Policy";
+  import Moderate from "../../core/Moderate";
   
-  export default class AccountPolicy extends Policy {
+  export default class ${className} extends Moderate {
       
       constructor(request: FastifyRequest){
           super(request);
       }
       ${m.map((el) => funDefination.replace("@name", el)).join("\n")}
   }`;
-  const fname = path.resolve(__dirname, `src/app/policies/${name}.ts`);
+  const fname = path.resolve(__dirname, `src/app/moderators/${className}.ts`);
   try {
     await fs.stat(fname);
     // if exist then go throw error
@@ -557,7 +559,7 @@ const makePolicy = async (args) => {
     );
   } catch (error) {
     await writeFile(fname, template);
-    return console.info("\t\x1b[32m%s\x1b[0m\n", `app/policies/${name}.ts`);
+    return console.info("\t\x1b[32m%s\x1b[0m\n", `app/moderators/${name}.ts`);
   }
 };
 
@@ -636,6 +638,6 @@ module.exports = {
   makeController,
   makeModel,
   makeSchema,
-  makePolicy,
+  makeModerator,
   rMakeDir,
 };

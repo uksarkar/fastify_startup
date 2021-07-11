@@ -2,7 +2,7 @@ import Controller from "../../../core/Controller";
 import { FReplay, FRequest } from "../../../core/extendeds/RequestReplay";
 import Response from "../../../core/extendeds/Response";
 import { Api500Exception } from "../../../core/extendeds/Exception";
-import UserPolicy from "../../policies/UserPolicy";
+import UserModerator from "../../moderators/UserModerator";
 import User from "../../models/User";
 import {
   UserCreateRequest,
@@ -14,7 +14,7 @@ import {
 
 export default class UserController extends Controller {
   constructor() {
-    super(UserPolicy);
+    super(UserModerator);
   }
 
   /**

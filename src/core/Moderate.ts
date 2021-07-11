@@ -2,7 +2,7 @@ import {
     FastifyRequest,
 } from "fastify";
 
-export default abstract class Policy {
+export default abstract class Moderate {
     request: FastifyRequest;
     
     constructor(request: FastifyRequest){
@@ -18,6 +18,6 @@ export default abstract class Policy {
     }
 }
 
-export interface PolicyFactory{
-    new(request: FastifyRequest): Policy;
+export interface ModeratorFactory{
+    new(request: FastifyRequest): Moderate;
 }

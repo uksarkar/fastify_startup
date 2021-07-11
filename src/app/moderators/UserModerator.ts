@@ -1,7 +1,7 @@
 import { FastifyRequest } from "fastify";
-import Policy from "../../core/Policy";
+import Moderate from "../../core/Moderate";
 
-export default class AccountPolicy extends Policy {
+export default class UserModerator extends Moderate {
   constructor(request: FastifyRequest) {
     super(request);
   }
@@ -14,7 +14,7 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   index(): boolean | string {
-    return this.reject();
+    return this.proceed();
   }
   /**
    * Method name should be the same as you want to apply
@@ -25,7 +25,7 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   show(): boolean | string {
-    return this.reject();
+    return this.proceed();
   }
   /**
    * Method name should be the same as you want to apply
@@ -36,7 +36,7 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   store(): boolean | string {
-    return this.reject();
+    return this.proceed();
   }
   /**
    * Method name should be the same as you want to apply
@@ -47,7 +47,7 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   update(): boolean | string {
-    return this.reject();
+    return this.proceed();
   }
   /**
    * Method name should be the same as you want to apply
@@ -58,6 +58,6 @@ export default class AccountPolicy extends Policy {
    * @returns boolean | string
    */
   destroy(): boolean | string {
-    return this.reject();
+    return this.reject("The moderator `src/moderates/UserModerator.ts > destroy()` prevented this request. Set `return this.proceed();` to see the magic.");
   }
 }

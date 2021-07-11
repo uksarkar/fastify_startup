@@ -40,8 +40,6 @@ export default class Server {
         this.initPlugins();
         this.fastify.log.info("Initializing Routes.");
         this.initRoutes();
-        this.fastify.log.info("Initializing Hooks.");
-        this.initHooks();
         return this;
     }
 
@@ -112,17 +110,17 @@ export default class Server {
                         try {
                             const controller = new route.controller();
                             // check up and apply policy
-                            if (controller.policy) {
-                                const policy = new controller.policy(req);
-                                const applyPolicy = await dynamicFunctionCaller(policy, route.handler);
+                            if (controller.moderator) {
+                                const moderator = new controller.moderator(req);
+                                const applymoderator = await dynamicFunctionCaller(moderator, route.handler);
                                 // plicy checkup
-                                if (applyPolicy.valid && applyPolicy.data !== true) {
-                                    const msg: string = typeof applyPolicy.data === 'string' && applyPolicy.data != '' ? applyPolicy.data : this.application.debug ? 'Cant pass the policy.' : 'Unauthorized!';
+                                if (applymoderator.valid && applymoderator.data !== true) {
+                                    const msg: string = typeof applymoderator.data === 'string' && applymoderator.data != '' ? applymoderator.data : this.application.debug ? 'Can\'t pass the moderator.' : 'Unauthorized!';
                                     throw new Api401Exception("Failed", msg);
-                                } else if (!applyPolicy.valid) {
-                                    this.fastify.log.warn(`Policy ${route.handler} not found!`)
-                                } else if (applyPolicy.valid && applyPolicy.data === true) {
-                                    this.fastify.log.info(`Policy ${route.handler} applied successfully.`)
+                                } else if (!applymoderator.valid) {
+                                    this.fastify.log.warn(`moderator ${route.handler} not found!`)
+                                } else if (applymoderator.valid && applymoderator.data === true) {
+                                    this.fastify.log.info(`moderator ${route.handler} applied successfully.`)
                                 }
                             }
 

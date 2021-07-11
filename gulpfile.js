@@ -11,7 +11,7 @@ const gulp = require("gulp"),
     makeController,
     makeModel,
     makeSchema,
-    makePolicy,
+    makeModerator,
     rMakeDir,
   } = require("./service");
 
@@ -35,8 +35,8 @@ gulp.task("make:schema", () => {
   return makeSchema(yargs(hideBin(process.argv)).argv);
 });
 
-gulp.task("make:policy", () => {
-  return makePolicy(yargs(hideBin(process.argv)).argv);
+gulp.task("make:moderator", () => {
+  return makeModerator(yargs(hideBin(process.argv)).argv);
 });
 
 gulp.task("configure:dist", () => {

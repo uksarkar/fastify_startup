@@ -19,7 +19,7 @@
     "make:controller": "gulp make:controller",
     "make:model": "gulp make:model",
     "make:schema": "gulp make:schema",
-    "make:policy": "gulp make:policy"
+    "make:moderator": "gulp make:moderator"
   },
   "dependencies": {
     "bcrypt": "^5.0.1",

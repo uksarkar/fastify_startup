@@ -57,7 +57,7 @@ const destroy: Schema = {
 };
 export default { index, show, store, update, destroy };
 
-// recieved request's interface
+// received request's interface
 export interface UserIndexRequest {
   Querystring: {
     limit?: number;

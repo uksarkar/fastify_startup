@@ -1,5 +1,5 @@
 import Env from "../core/extendeds/Env";
-import hooks from "../app/hooks";
+import hooks from "../hooks";
 
 export default {
 
@@ -24,7 +24,7 @@ export default {
     |
     */
 
-    debugLavel: Env.get<string>("LOG_LEVEL","production")?.toLowerCase(),
+    debugLevel: Env.get<string>("LOG_LEVEL","production")?.toLowerCase(),
 
     /*
     |--------------------------------------------------------------------------

@@ -1,7 +1,7 @@
 import { FastifyRequest } from "fastify";
-import Moderate from "../../core/Moderate";
+import Policy from "../../core/Policy";
 
-export default class UserModerator extends Moderate {
+export default class UserPolicy extends Policy {
   constructor(request: FastifyRequest) {
     super(request);
   }
@@ -58,6 +58,6 @@ export default class UserModerator extends Moderate {
    * @returns boolean | string
    */
   destroy(): boolean | string {
-    return this.reject("The moderator `src/moderates/UserModerator.ts > destroy()` prevented this request. Set `return this.proceed();` to see the magic.");
+    return this.reject("The policy `src/policies/UserPolicy.ts > destroy()` prevented this request. Set `return this.proceed();` to see the magic.");
   }
 }

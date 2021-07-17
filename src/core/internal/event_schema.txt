@@ -1,0 +1,18 @@
+import EventEmitter from "events";
+
+class @name extends EventEmitter {
+    public readonly THE_EVENT_NAME = "onFire";
+}
+
+// instantiate the event
+const I@name = new @name();
+
+// register actions
+I@name.on(I@name.THE_EVENT_NAME, async (data: any) => {
+    // do something....
+});
+
+// add listener as many as your needs
+
+// export the event
+export default I@name;

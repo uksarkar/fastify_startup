@@ -1,8 +1,8 @@
-import Hook from "../../core/extendeds/Hook";
-import Application from "../../core/Application";
-import IPlugin from "../../core/types/IPlugin";
+import Hook from "../core/extendeds/Hook";
+import Application from "../core/Application";
+import IPlugin from "../core/types/IPlugin";
 import fastifyStatic from "fastify-static";
-import PathService from "../../core/service/PathService";
+import PathService from "../core/service/PathService";
 
 export default class PluginHook implements Hook {
     // application instence

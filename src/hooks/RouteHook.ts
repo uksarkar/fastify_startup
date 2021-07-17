@@ -1,8 +1,8 @@
-import RouteDefinition from "../../core/extendeds/RouteDefinition";
-import routes from "../../routes";
-import cacheRoutes from "../../core/cache/routes";
-import Hook from "../../core/extendeds/Hook";
-import Application from "../../core/Application";
+import RouteDefinition from "../core/extendeds/RouteDefinition";
+import routes from "../routes";
+import cacheRoutes from "../core/cache/routes";
+import Hook from "../core/extendeds/Hook";
+import Application from "../core/Application";
 import { RouteOptions } from "fastify";
 
 export default class RouteHook implements Hook {

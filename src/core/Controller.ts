@@ -1,9 +1,9 @@
-import { ModeratorFactory } from "./Moderate";
+import { PolicyFactory } from "./Policy";
 
 export default class Controller {
-    moderator?: ModeratorFactory;
-    
-    constructor(moderator?: ModeratorFactory) {
-        this.moderator = moderator;
+    policy?: PolicyFactory;
+
+    constructor(policy?: PolicyFactory) {
+        this.policy = policy;
     }
 }

@@ -1,0 +1,1 @@
+require('./src/core/internal/service.js')

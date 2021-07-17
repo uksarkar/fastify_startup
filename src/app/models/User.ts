@@ -1,7 +1,6 @@
 import Hash from "../../core/extendeds/Hash";
 import { Document, Model, model, Schema, Query } from "mongoose";
-import Event from "../../core/extendeds/Event";
-import OnNewUser from "../events/OnNewUser";
+import UserEvents from "../events/UserEvents";
 import { INotificationFactory } from "core/types/INotification";
 import Notification from "../../core/extendeds/Notification";
 
@@ -116,7 +115,7 @@ UserSchema.pre<UserDocument>("save", async function () {
 
 UserSchema.post<UserDocument>(["save"], async doc => {
   // fire the event
-  Event.queue(OnNewUser, doc);
+  UserEvents.emit(UserEvents.NEW_USER_REGISTER, doc);
 });
 
 // Default export

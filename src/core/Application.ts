@@ -34,14 +34,14 @@ export default class Application {
         this.dbName = Config.get<string>("database.dbName", '');
         this.dbOptions = Config.get<ConnectOptions>("database.dbOptions", {});
         this.ifileLogger = pino({ level: 'error' }, pino.destination(PathService.logPath("fastify.log")));
-        this.idefaultLogger = Config.get("app.debugLavel", "production") !== "production" ? pino({
+        this.idefaultLogger = Config.get("app.debugLevel", "production") !== "production" ? pino({
             prettyPrint: {
                 colorize: true,
                 levelFirst: true,
                 translateTime: "yyyy-dd-mm, h:MM:ss TT",
             },
         }) : false;
-        this.debug = Config.get("app.debugLavel", "production") !== "production";
+        this.debug = Config.get("app.debugLevel", "production") !== "production";
     }
 
     get defaultLogger() {

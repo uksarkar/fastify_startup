@@ -2,7 +2,7 @@ import Controller from "../../../core/Controller";
 import { FReplay, FRequest } from "../../../core/extendeds/RequestReplay";
 import Response from "../../../core/extendeds/Response";
 import { Api500Exception } from "../../../core/extendeds/Exception";
-import UserModerator from "../../moderators/UserModerator";
+import UserPolicy from "../../policies/UserPolicy";
 import User from "../../models/User";
 import {
   UserCreateRequest,
@@ -11,12 +11,10 @@ import {
   UserShowRequest,
   UserUpdateRequest
 } from "../schema/UserRequestSchema";
-import Notification from "../../../core/extendeds/Notification";
-import NewUserRegisterNotification from "../../notifications/NewUserRegisterNotification";
 
 export default class UserController extends Controller {
   constructor() {
-    super(UserModerator);
+    super(UserPolicy);
   }
 
   /**

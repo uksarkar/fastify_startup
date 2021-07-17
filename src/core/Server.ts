@@ -5,7 +5,7 @@ import fastify, {
     FastifyRequest,
 } from "fastify";
 import { connect } from "mongoose";
-import RouteDefination from "./extendeds/RouteDefinition";
+import RouteDefinition from "./extendeds/RouteDefinition";
 import Application from "./Application";
 import { HookFactory } from "./extendeds/Hook";
 import { dynamicFunctionCaller } from "./service/JSService";
@@ -100,9 +100,9 @@ export default class Server {
 
     // register all routes to fastify
     protected initRoutes(): void {
-        this.application.routes.forEach((route: RouteDefination | RouteOptions) => {
+        this.application.routes.forEach((route: RouteDefinition | RouteOptions) => {
             // create fastify route options
-            if (this.isRouteDefination(route)) {
+            if (this.isRouteDefinition(route)) {
                 const routeConfigs: RouteOptions = {
                     method: route.method,
                     url: route.url,
@@ -110,28 +110,28 @@ export default class Server {
                         try {
                             const controller = new route.controller();
                             // check up and apply policy
-                            if (controller.moderator) {
-                                const moderator = new controller.moderator(req);
-                                const applymoderator = await dynamicFunctionCaller(moderator, route.handler);
-                                // plicy checkup
-                                if (applymoderator.valid && applymoderator.data !== true) {
-                                    const msg: string = typeof applymoderator.data === 'string' && applymoderator.data != '' ? applymoderator.data : this.application.debug ? 'Can\'t pass the moderator.' : 'Unauthorized!';
+                            if (controller.policy) {
+                                const policy = new controller.policy(req);
+                                const applypolicy = await dynamicFunctionCaller(policy, route.handler);
+                                // policy checkup
+                                if (applypolicy.valid && applypolicy.data !== true) {
+                                    const msg: string = typeof applypolicy.data === 'string' && applypolicy.data != '' ? applypolicy.data : this.application.debug ? 'Can\'t pass the policy.' : 'Unauthorized!';
                                     throw new Api401Exception("Failed", msg);
-                                } else if (!applymoderator.valid) {
-                                    this.fastify.log.warn(`moderator ${route.handler} not found!`)
-                                } else if (applymoderator.valid && applymoderator.data === true) {
-                                    this.fastify.log.info(`moderator ${route.handler} applied successfully.`)
+                                } else if (!applypolicy.valid) {
+                                    this.fastify.log.warn(`policy ${route.handler} not found!`)
+                                } else if (applypolicy.valid && applypolicy.data === true) {
+                                    this.fastify.log.info(`policy ${route.handler} applied successfully.`)
                                 }
                             }
 
                             // call the handler from the controller
-                            const callHandaler = await dynamicFunctionCaller(controller, route.handler, req, rep);
+                            const callHandler = await dynamicFunctionCaller(controller, route.handler, req, rep);
 
                             // check if the function was called successfully
-                            if (callHandaler.valid) {
-                                const res: Response<any> = callHandaler.data;
+                            if (callHandler.valid) {
+                                const res: Response<any> = callHandler.data;
                                 rep.code(res.statusCode);
-                                return res;
+                                return res.isFile ? rep.sendFile(res.data) : res;
                             }
                             // if not the go throw error
                             throw new Api500Exception("Method:", `Handler function ${route.controller}.${route.handler}() not found in ${route.controller}.`);
@@ -173,8 +173,8 @@ export default class Server {
     }
 
     // route definition checkup
-    protected isRouteDefination(route: RouteDefination | RouteOptions): route is RouteDefination {
-        return (<RouteDefination>route).controller !== undefined;
+    protected isRouteDefinition(route: RouteDefinition | RouteOptions): route is RouteDefinition {
+        return (<RouteDefinition>route).controller !== undefined;
     }
 
 }

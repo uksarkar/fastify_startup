@@ -294,6 +294,9 @@ const configureDev = async () => {
   if (!checkFileExists(getPathFromRoot("./src/.env"))) {
     copyDotEnvFile(getPathFromRoot("./src/.env"));
   }
+  await rMakeDir(getPathFromRoot("./src/core","cache"));
+  await rMakeDir(getPathFromRoot("dist"), "storage/log");
+  await rMakeDir(getPathFromRoot("dist"), "storage/public");
   cacheEnvFile(
     getPathFromRoot("./src/.env"),
     getPathFromRoot("./src/core/cache/env.json")

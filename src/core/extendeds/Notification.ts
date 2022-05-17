@@ -5,10 +5,12 @@ import { Job, DoneCallback } from "bee-queue";
 export default class Notification<T>{
     private notifier: INotificationFactory<T>;
     private data: T;
+    private args: unknown[];
 
-    constructor(notifier: INotificationFactory<T>, data: T){
+    constructor(notifier: INotificationFactory<T>, data: T, ...args: unknown[]){
         this.notifier = notifier;
         this.data = data;
+        this.args = args;
     }
 
     /**
@@ -16,19 +18,19 @@ export default class Notification<T>{
      * make sure that you wait for complete this operation
      * by `await`
      */
-    async notifySync(){
-        const n = new this.notifier(this.data);
+    async notifySync(): Promise<void>{
+        const n = new this.notifier(this.data, ...this.args);
         for await (const channel of n.channels) {
             await channel.call(n);
         }
     }
 
-    notifyQueue(){
-        const q = new Queue('notifications', this.data);
-        q.process(async (job: Job<T>, done: DoneCallback<any>) => {
+    notifyQueue(): void{
+        const q = new Queue("notifications", this.data);
+        q.process(async (job: Job<T>, done: DoneCallback<unknown>) => {
             let err: any = null;
             try {
-                const n = new this.notifier(job.data);
+                const n = new this.notifier(job.data, ...this.args);
                 for await (const channel of n.channels) {
                     await channel.call(n);
                 }
@@ -41,13 +43,13 @@ export default class Notification<T>{
         });
     }
 
-    static sync<T>(notifier: INotificationFactory<T>, data: T):Promise<void>{
-        const n = new this(notifier, data);
+    static sync<T>(notifier: INotificationFactory<T>, data: T, ...args: unknown[]):Promise<void>{
+        const n = new this(notifier, data, ...args);
         return n.notifySync();
     }
 
-    static queue<T>(notifier: INotificationFactory<T>, data: T):void{
-        const n = new this(notifier, data);
+    static queue<T>(notifier: INotificationFactory<T>, data: T, ...args: unknown[]):void{
+        const n = new this(notifier, data, ...args);
         n.notifyQueue();
     }
 }

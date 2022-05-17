@@ -1,7 +1,7 @@
-import { UserDocument } from "../models/User";
-import Env from "../../core/extendeds/Env";
-import Mail from "../../core/extendeds/Mail";
-import INotification from "../../core/types/INotification";
+import { UserDocument } from "@models/User";
+import Env from "@supports/Env";
+import Mail from "@supports/Mail";
+import INotification from "@supports/INotification";
 
 export default class @name implements INotification<UserDocument>{
     channels = [this.byMail, this.bySms];

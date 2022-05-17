@@ -3,7 +3,7 @@
  * @param fun Function name of the class to be call
  * @param ...args Rest of the arguments, that will pass to the function
  * @returns Object:{valid: bolean, data: any | null, hint?:string}
- * 
+ *
  * ```
  * Class A {
  *    logMessage(msg) {
@@ -19,13 +19,14 @@
  * ```
  */
 export async function dynamicFunctionCaller(obj, fun, ...args) {
-  try {
-    if (obj[fun] && obj[fun] instanceof Function) {
-      return { valid: true, data: await obj[fun](...args) };
+    try {
+        if (obj[fun] && obj[fun] instanceof Function) {
+            return { valid: true, data: await obj[fun](...args) };
+        }
+        return { valid: false, data: null, hint: "NOT_A_FUNCTION" };
+    } catch (error) {
+        if(process.env.NODE_ENV !== "test")
+            console.error(error);
+        throw error;
     }
-    return { valid: false, data: null, hint: "NOT_A_FUNCTION" };
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
 }

@@ -1,12 +1,12 @@
-import dotenv from 'dotenv'
-import path from 'path';
-import {writeFileSync, readFileSync} from 'fs';
-const json = require('../cache/env.json');
+import dotenv from "dotenv";
+import path from "path";
+import { writeFileSync, readFileSync } from "fs";
+import json from "../cache/env.json";
 
 export default class Env {
     constructor() {
-        let src = path.resolve(__dirname, "../../.env");
-        let data = dotenv.parse(readFileSync(src));
+        const src = path.resolve(__dirname, "../../.env");
+        const data = dotenv.parse(readFileSync(src));
         Object.assign(this, data);
     }
 
@@ -17,12 +17,13 @@ export default class Env {
      * @returns Value of the key
      */
     static get<T>(key: string, value: T): T {
-        let cached = this.loadCached(), k = key as keyof object, result: T | null | undefined = cached[k];
+        const cached = json, k = key as keyof unknown;
+        let result: T | null = cached[k];
 
-        if (!result || cached["APP_LEVEL" as keyof object] === 'debug') {
-            let env = new this();
+        if (!result || cached["APP_LEVEL" as keyof unknown] === "debug") {
+            const env = new this();
             result = env[k];
-            env.catcheEnv();
+            env.cacheEnv();
         }
 
         return result ? result : value;
@@ -34,30 +35,40 @@ export default class Env {
      * @param value Default value to return if key doesn't exist
      * @returns Value of the key
      */
-    static unsafeGet(key: string, value: string | any | null = null): string | any | null {
-        let cached = this.loadCached(), k = key as keyof object, result: string | any | null | undefined = cached[k];
+    static unsafeGet(key: string, value: string | unknown | null = null): string | unknown | null {
+        const cached = json, k = key as keyof unknown;
+        let result: string | unknown | null | undefined = cached[k];
 
-        if (!result && cached["APP_LEVEL" as keyof object] !== 'production' || cached["APP_LEVEL" as keyof object] === 'debug') {
-            let env = new this();
+        if (!result && cached["APP_LEVEL" as keyof unknown] !== "production" || cached["APP_LEVEL" as keyof object] === "debug") {
+            const env = new this();
             result = env[k];
-            env.catcheEnv();
+            env.cacheEnv();
         }
 
         return result ? result : value;
     }
 
-    private static loadCached(): object {
+    /**
+     * cache .env file data to json
+     * @returns true
+     */
+    private cacheEnv(): boolean {
         try {
-            return JSON.parse(json);
+            const data = Object.assign({}, this);
+            writeFileSync(path.resolve(__dirname, "../cache/env.json"),
+                JSON.stringify(data, null, "\t"));
+            return true;
         } catch (error) {
-            return {};
+            console.error(error);
+            return false;
         }
     }
 
-    private catcheEnv(): boolean {
-        let data = Object.assign({}, this);
-        writeFileSync(path.resolve(__dirname, "../cache/env.json"),
-            JSON.stringify(data, null, '\t'))
-        return true;
+    /**
+     * Cache .env to .json file
+     */
+    public static reCacheEnv(): void {
+        const e = new this();
+        e.cacheEnv();
     }
 }

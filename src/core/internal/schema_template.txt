@@ -6,11 +6,11 @@ export interface @replaceModel extends Model<@replaceDocument> {
 }
 
 // Defining interfaces
-export interface @replace {
+export interface I@replace {
   property: string;
 }
 
-export interface @replaceDocument extends @replace, Document {
+export interface @replaceDocument extends I@replace, Document {
   //  propertyUppercase: string;
   //  doesHappened():string;
 }

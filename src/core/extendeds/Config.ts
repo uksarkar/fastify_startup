@@ -14,8 +14,8 @@ export default class Config<T> {
 
     find(conf?: object): T | null {
         const key = this.accessor.shift(),
-                c = conf ? conf:this.configs,
-                val = key ? c[key as keyof object] : null;
+            c = conf ? conf:this.configs,
+            val = key ? c[key as keyof object] : null;
         return val && this.accessor.length > 0 ? this.find(val) : val ? val : this.defaultVal;
     }
 

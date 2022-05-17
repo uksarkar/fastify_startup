@@ -12,17 +12,17 @@ export default class Cache {
         this.key = key;
     }
 
-    public static get(key: string) {
+    public static get(key: string): unknown {
         const c = new this(key);
         return c.nodeCacheGet();
     }
 
-    public static set(key: string,value: string, ttl: string|number) {
+    public static set(key: string,value: string, ttl: string|number):boolean {
         const c = new this(key);
         return c.nodeCacheSet(value,ttl);
     }
 
-    public static remove(key: string) {
+    public static remove(key: string):number {
         const c = new this(key);
         return c.nodeCacheRemove();
     }

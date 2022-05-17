@@ -6,5 +6,5 @@ export default interface INotification<T>{
 }
 
 export interface INotificationFactory<T>{
-    new(user:T): INotification<T>;
+    new(user:T, ...args: any[]): INotification<T>;
 }

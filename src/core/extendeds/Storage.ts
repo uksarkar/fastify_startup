@@ -10,25 +10,25 @@ const pump = promisify(pipeline);
 
 export default class Storage {
     fileBinary: NodeJS.ReadableStream | Buffer;
-    fileName: string;
+    filename: string;
     dir: string;
     options?: BufferEncoding | BaseEncodingOptions;
 
     constructor(fileData: FileData, dir?: string, options?: BufferEncoding | BaseEncodingOptions) {
         this.fileBinary = fileData.file;
-        this.fileName = fileData.fileName;
-        this.dir = dir ? dir : PathService.storagePath("public");
+        this.filename = fileData.filename;
+        this.dir = dir ?? PathService.storagePath("public");
         this.options = options;
     }
 
     public async write(): Promise<boolean> {
         try {
             if (Buffer.isBuffer(this.fileBinary)) {
-                await writeFile(`${this.dir}${this.fileName}`, this.fileBinary, this.options);
+                await writeFile(`${this.dir}/${this.filename}`, this.fileBinary, this.options);
             } else {
                 await pump(
                     this.fileBinary,
-                    createWriteStream(`${this.dir}${this.fileName}`)
+                    createWriteStream(`${this.dir}/${this.filename}`),
                 );
             }
             return true;
@@ -40,7 +40,7 @@ export default class Storage {
 
     public async trash(): Promise<boolean>{
         try {
-            await unlink(`${this.dir}/${this.fileName}`);
+            await unlink(`${this.dir}/${this.filename}`);
             return true;
         } catch (error) {
             console.error(error);
@@ -69,16 +69,16 @@ export default class Storage {
     }
 
     public static async storeAs(file: NodeJS.ReadableStream | Buffer, ext: string, dir?: string): Promise<string | null> {
-        const fileName = Hash.uniqueId() + ext;
-        return await this.store({ file, fileName }, PathService.storagePath(dir)) ? fileName : null;
+        const filename = Hash.uniqueId() + ext;
+        return await this.store({ file, filename }, PathService.storagePath(dir)) ? filename : null;
     }
 
     public static storeAsUnique(data: FileData, dir?: string) {
-        return this.storeAs(data.file, path.extname(data.fileName), dir);
+        return this.storeAs(data.file, path.extname(data.filename), dir);
     }
 
     public static async storeAsUniqueToPublic(data: FileData, dir?: string) {
-        const fileName = Hash.uniqueId() + path.extname(data.fileName);
-        return await this.storeToPublic({ ...data, fileName }, dir) ? fileName : null;
+        const filename = Hash.uniqueId() + path.extname(data.filename);
+        return await this.storeToPublic({ ...data, filename }, dir) ? filename : null;
     }
 }

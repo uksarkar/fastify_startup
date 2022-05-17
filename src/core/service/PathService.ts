@@ -28,7 +28,7 @@ export default class PathService {
         return this.resolvePath("../../storage", path);
     }
 
-    private static resolvePath(location: string, to: string = '') {
-        return resolve(__dirname, location, to);
+    private static resolvePath(location: string, to = "") {
+        return resolve(__dirname, `${location}/${to}`);
     }
 }

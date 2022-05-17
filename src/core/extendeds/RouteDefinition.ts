@@ -1,6 +1,6 @@
-import Controller from "../Controller";
+import Controller from "@supports/Controller";
 import { HTTPMethods, onRequestHookHandler } from "fastify";
-import Schema from "./Schema";
+import Schema from "@supports/Schema";
 
 export default interface RouteDefinition {
     method: HTTPMethods | HTTPMethods[];

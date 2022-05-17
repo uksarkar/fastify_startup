@@ -1,24 +1,31 @@
-type DataType = 'object' | 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'null'
+type DataType = "object" | "string" | "number" | "integer" | "boolean" | "array" | "null";
 
-export interface SchemaItem{
+export interface SchemaItem {
     type: DataType | DataType[],
-    required?: string[],
+    required?: string[] | RequiredErrorMessages,
     properties?: Properties,
-    nullable?:boolean,
+    nullable?: boolean,
     oneOf?: SchemaItem[],
     maxLength?: number,
+    min?: number,
     minLength?: number,
     length?: number,
-    enum?: [],
+    enum?: unknown[],
     not?: SchemaItem,
+    errorMessage?: SchemaItem,
+    errorMessages?: SchemaItem,
 }
 
-interface Properties{
+interface Properties {
     [k: string]: SchemaItem
 }
 
-interface IResponse{
+interface IResponse {
     [k: number]: SchemaItem
+}
+
+interface RequiredErrorMessages {
+    [k: string]: string
 }
 
 export default interface Schema {

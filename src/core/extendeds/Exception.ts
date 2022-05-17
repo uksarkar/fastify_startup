@@ -8,12 +8,12 @@ export default class Exception extends Error {
         isOperational: boolean,
         description: string,
     ) {
-        super(description)
+        super(description);
 
-        Object.setPrototypeOf(this, new.target.prototype)
-        this.name = name
-        this.isOperational = isOperational
-        Error.captureStackTrace(this)
+        Object.setPrototypeOf(this, new.target.prototype);
+        this.name = name;
+        this.isOperational = isOperational;
+        Error.captureStackTrace(this);
     }
 }
 
@@ -21,8 +21,8 @@ export class Api400Exception extends Exception {
     statusCode: number;
     constructor(
         name: string,
-        description: string = 'Bad Request',
-        isOperational: boolean = true
+        description = "Bad Request",
+        isOperational = true,
     ) {
         super(name, isOperational, description);
         this.statusCode = HttpResponseCode.BAD_REQUEST;
@@ -33,11 +33,23 @@ export class Api401Exception extends Exception {
     statusCode: number;
     constructor(
         name: string,
-        description: string = 'Unauthorized',
-        isOperational: boolean = true
+        description = "Unauthorized",
+        isOperational = true,
     ) {
         super(name, isOperational, description);
         this.statusCode = HttpResponseCode.UNAUTHORIZED;
+    }
+}
+
+export class Api403Exception extends Exception {
+    statusCode: number;
+    constructor(
+        name: string,
+        description = "Forbidden",
+        isOperational = true,
+    ) {
+        super(name, isOperational, description);
+        this.statusCode = HttpResponseCode.FORBIDDEN;
     }
 }
 
@@ -45,10 +57,10 @@ export class Api404Exception extends Exception {
     statusCode: number;
     constructor(
         name: string,
-        description: string = 'Not found.',
-        isOperational: boolean = true
+        description = "Not found.",
+        isOperational = true,
     ) {
-        super(name, isOperational, description)
+        super(name, isOperational, description);
         this.statusCode = HttpResponseCode.NOT_FOUND;
     }
 }
@@ -57,11 +69,11 @@ export class Api406Exception extends Exception {
     statusCode: number;
     constructor(
         name: string,
-        description: string = 'Unprocessable Entity.',
-        isOperational: boolean = true
+        description = "Unprocessable Entity.",
+        isOperational = true,
     ) {
-        super(name, isOperational, description)
-        this.statusCode = HttpResponseCode.UNPROCESSABLE_ENTITY;
+        super(name, isOperational, description);
+        this.statusCode = HttpResponseCode.UNPROCURABLE_ENTITY;
     }
 }
 
@@ -69,10 +81,10 @@ export class Api500Exception extends Exception {
     statusCode: number;
     constructor(
         name: string,
-        description: string = 'Internal Server.',
-        isOperational: boolean = false
+        description = "Internal Server.",
+        isOperational = false,
     ) {
-        super(name, isOperational, description)
+        super(name, isOperational, description);
         this.statusCode = HttpResponseCode.INTERNAL_SERVER;
     }
 }

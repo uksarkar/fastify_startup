@@ -6,18 +6,20 @@ interface IRCode {
     BAD_REQUEST: IResponseCode;
     UNAUTHORIZED: IResponseCode;
     NOT_FOUND: IResponseCode;
-    UNPROCESSABLE_ENTITY: IResponseCode;
+    UNPROCURABLE_ENTITY: IResponseCode;
     INTERNAL_SERVER: IResponseCode;
+    FORBIDDEN: IResponseCode;
 }
 
-const cods: IRCode = {
+const HttpResponseCode: IRCode = {
     OK: 200,
     CREATED: 201,
     BAD_REQUEST: 400,
     UNAUTHORIZED: 401,
+    FORBIDDEN: 403,
     NOT_FOUND: 404,
-    UNPROCESSABLE_ENTITY: 406,
+    UNPROCURABLE_ENTITY: 406,
     INTERNAL_SERVER: 500,
-}
+};
 
-export default cods;
+export default HttpResponseCode;

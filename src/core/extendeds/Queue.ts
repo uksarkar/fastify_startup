@@ -8,21 +8,21 @@ export default class Queue<T>{
     /**
      * Redis is required to work with Queue
      * simple implementetion of BeeQueue
-     * 
+     *
      * for more option use BeeQueue instead
      * @param name name of the job
      * @param job data that will pass to the queue job process
      */
     constructor(name: string, job: T) {
-        let redis = {
-            host: Env.get('REDIS_HOST', '127.0.0.1'),
-            port: Env.get('REDIS_PORT', 6379),
-            password: Env.get<string | null>('REDIS_PASSWORD', null)
+        const redis = {
+            host: Env.get("REDIS_HOST", "127.0.0.1"),
+            port: Env.get("REDIS_PORT", 6379),
+            password: Env.get<string | null>("REDIS_PASSWORD", null),
         };
 
         this.queue = new BeeQueue(name, {
             removeOnSuccess: true,
-            redis
+            redis,
         });
         this.job = this.queue.createJob(job);
         this.job.save();

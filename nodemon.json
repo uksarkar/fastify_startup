@@ -2,6 +2,6 @@
   "watch": ["./src"],
   "ext": ".ts,.js",
   "ignore": ["src/core/cache/","src/log/"],
-  "exec": "ts-node ./src/init.ts",
+  "exec": "ts-node -r tsconfig-paths/register ./src/init.ts",
   "verbose": true
 }

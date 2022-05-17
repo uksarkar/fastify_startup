@@ -3,15 +3,16 @@ import { HookFactory } from "./extendeds/Hook";
 import RouteDefinition from "./extendeds/RouteDefinition";
 import IPlugin from "./types/IPlugin";
 import { ConnectOptions } from "mongoose";
-import pino from 'pino';
+import pino from "pino";
 import PathService from "./service/PathService";
-import { RouteOptions } from "fastify";
+import { RouteOptions, FastifyInstance, FastifyLoggerOptions } from "fastify";
 
 export default class Application {
-    private iroutes: Array<RouteDefinition | RouteOptions> = [];
-    private iplugins: IPlugin[] = [];
-    private idefaultLogger: boolean | any;
-    private ifileLogger: boolean | any;
+    private IRoutes: Array<RouteDefinition | RouteOptions> = [];
+    private IPlugins: IPlugin[] = [];
+    private IDefaultLogger: boolean | FastifyLoggerOptions;
+    private IFileLogger: boolean | any;
+    private IRegisterEvent?: FastifyInstance["addHook"];
     public readonly hooks: HookFactory[];
     public readonly host: string;
     public readonly port: number;
@@ -23,18 +24,19 @@ export default class Application {
     public readonly timeZone: string;
     public readonly debug: boolean;
 
-    constructor() {
+    constructor(options?:{logger?:boolean, fileLogger?:string}) {
+        const {logger = true, fileLogger} = options ?? {};
         this.isProduction = Config.get<boolean>("app.isProduction", true);
         this.timeZone = Config.get<string>("app.timeZone", "America/New_York");
         this.hooks = Config.get<HookFactory[]>("app.hooks", []);
-        this.host = Config.get<string>("app.host", '');
+        this.host = Config.get<string>("app.host", "");
         this.port = Config.get<number>("app.port", 5000);
-        this.dbHost = Config.get<string>("database.dbHost", '');
+        this.dbHost = Config.get<string>("database.dbHost", "");
         this.dbPort = Config.get<number>("database.dbPort", 27017);
-        this.dbName = Config.get<string>("database.dbName", '');
+        this.dbName = Config.get<string>("database.dbName", "");
         this.dbOptions = Config.get<ConnectOptions>("database.dbOptions", {});
-        this.ifileLogger = pino({ level: 'error' }, pino.destination(PathService.logPath("fastify.log")));
-        this.idefaultLogger = Config.get("app.debugLevel", "production") !== "production" ? pino({
+        this.IFileLogger = pino({ level: "error" }, pino.destination(PathService.logPath(fileLogger ?? "fastify.log")));
+        this.IDefaultLogger = logger === true && Config.get("app.debugLevel", "production") !== "production" ? pino({
             prettyPrint: {
                 colorize: true,
                 levelFirst: true,
@@ -44,36 +46,43 @@ export default class Application {
         this.debug = Config.get("app.debugLevel", "production") !== "production";
     }
 
-    get defaultLogger() {
-        return this.idefaultLogger;
+    get defaultLogger():boolean | FastifyLoggerOptions {
+        return this.IDefaultLogger;
     }
-    get fileLogger() {
-        return this.ifileLogger;
+    get fileLogger():boolean | any {
+        return this.IFileLogger;
     }
-    get routes() {
-        return this.iroutes;
+    get routes():Array<RouteDefinition | RouteOptions> {
+        return this.IRoutes;
     }
-    get plugins() {
-        return this.iplugins;
+    get plugins():IPlugin[] {
+        return this.IPlugins;
+    }
+    get registerEvent():FastifyInstance["addHook"] | undefined{
+        return this.IRegisterEvent;
     }
 
-    public registerPLugins(plugins: IPlugin[]): Application {
-        this.iplugins = this.iplugins.concat(plugins);
+    set setFastifyAddHookToRegisterEvent(e: FastifyInstance["addHook"]){
+        this.IRegisterEvent = e;
+    }
+
+    public registerPlugins(plugins: IPlugin[]): Application {
+        this.IPlugins = this.IPlugins.concat(plugins);
         return this;
     }
 
     public registerRoutes(routes: Array<RouteDefinition | RouteOptions>): Application {
-        this.iroutes = this.iroutes.concat(routes);
+        this.IRoutes = this.IRoutes.concat(routes);
         return this;
     }
 
-    public registerDefaultLogger(logger: any) {
-        this.idefaultLogger = logger;
+    public registerDefaultLogger(logger: boolean | any): Application {
+        this.IDefaultLogger = logger;
         return this;
     }
 
-    public registerFileLogger(logger: any) {
-        this.ifileLogger = logger;
+    public registerFileLogger(logger: FastifyLoggerOptions): Application {
+        this.IFileLogger = logger;
         return this;
     }
 
